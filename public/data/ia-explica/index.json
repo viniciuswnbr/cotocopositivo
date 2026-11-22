@@ -12,6 +12,10 @@
       "data": "2026-11-20",
       "duracao": "08:42",
       "arquivo": "ep_056.json",
+      "ferramenta_treino": {
+        "nome": "Simulação Positiva",
+        "url": "ferramentas/simulacao.html"
+      },
       "resumo": "Entenda como o cérebro cria novas rotas neurais com microações diárias e como prompts de IA podem atuar como âncoras cognitivas.",
       "niveis": {
         "iniciante": "Seu cérebro funciona como uma trilha na floresta: quanto mais você passa por um hábito positivo, mais fácil fica o caminho.",
@@ -22,8 +26,46 @@
         "titulo": "Hábitos Atômicos",
         "autor": "James Clear",
         "plataforma": "Amazon",
-        "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear"
-      }
+        "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear",
+        "pilares": [
+          "1. Torne Óbvio: desenhe gatilhos visuais claros no seu ambiente.",
+          "2. Torne Atraente: associe o novo hábito a uma recompensa positiva.",
+          "3. Torne Fácil: reduza o atrito com a regra dos 2 minutos.",
+          "4. Torne Satisfatório: celebre pequenas vitórias para fixar o circuito."
+        ]
+      },
+      "quiz_questions": [
+        {
+          "pergunta": "Qual processo biológico acelera os sinais neurais quando repetimos um hábito?",
+          "opcoes": [
+            "Mielinização dos axônios",
+            "Desidratação sináptica",
+            "Bloqueio do córtex visual"
+          ],
+          "correta": 0,
+          "explicacao": "A mielina reveste os circuitos neurais repetidos, tornando a condução mais rápida e econômica."
+        },
+        {
+          "pergunta": "Qual é a duração recomendada da microação no Loop Neuro-Algorítmico?",
+          "opcoes": [
+            "60 minutos intensos",
+            "Apenas 2 minutos",
+            "3 horas sem pausa"
+          ],
+          "correta": 1,
+          "explicacao": "Microações de 2 minutos vencem a resistência inicial do cérebro e criam consistência."
+        },
+        {
+          "pergunta": "Como a IA atua no protocolo de reprogramação de hábitos?",
+          "opcoes": [
+            "Substituindo o sono profundo",
+            "Como âncora cognitiva e copiloto reflexivo",
+            "Eliminando a necessidade de prática"
+          ],
+          "correta": 1,
+          "explicacao": "Prompts de IA ajudam a revisar vitórias diárias e calibrar o próximo micro-passo."
+        }
+      ]
     },
     {
       "numero": 55,
@@ -34,6 +76,10 @@
       "data": "2026-11-15",
       "duracao": "10:15",
       "arquivo": "ep_055.json",
+      "ferramenta_treino": {
+        "nome": "Quiz de Positividade",
+        "url": "ferramentas/quiz.html"
+      },
       "resumo": "Descubra como usar a teoria do Sistema 1 e Sistema 2 de Daniel Kahneman junto com assistentes de IA para tomar decisões mais claras.",
       "niveis": {
         "iniciante": "Temos dois modos de pensar: o piloto automático (rápido) e o modo analítico (devagar). A IA ajuda a ativar o modo analítico.",
@@ -44,8 +90,46 @@
         "titulo": "Rápido e Devagar: Duas Formas de Pensar",
         "autor": "Daniel Kahneman",
         "plataforma": "Amazon",
-        "url": "https://www.amazon.com.br/s?k=Rapido+e+Devagar+Daniel+Kahneman"
-      }
+        "url": "https://www.amazon.com.br/s?k=Rapido+e+Devagar+Daniel+Kahneman",
+        "pilares": [
+          "1. Sistema 1 vs Sistema 2: reconheça quando está no piloto automático.",
+          "2. Viés de Disponibilidade: não confunda memória recente com probabilidade real.",
+          "3. Ancoragem Consciente: questione o primeiro número ou impressão recebida.",
+          "4. Aversão à Perda: avalie ganhos e riscos com métricas objetivas."
+        ]
+      },
+      "quiz_questions": [
+        {
+          "pergunta": "Qual sistema mental opera de forma rápida, intuitiva e automática?",
+          "opcoes": [
+            "Sistema 1",
+            "Sistema 2",
+            "Sistema Pré-Frontal Lento"
+          ],
+          "correta": 0,
+          "explicacao": "O Sistema 1 é rápido e automático; o Sistema 2 exige esforço analítico consciente."
+        },
+        {
+          "pergunta": "Que tipo de prompt ajuda a ativar o Sistema 2 diante de uma decisão difícil?",
+          "opcoes": [
+            "Prompt de 'advogado do diabo'",
+            "Prompt de resposta de 1 palavra",
+            "Prompt sem contexto"
+          ],
+          "correta": 0,
+          "explicacao": "Pedir contra-argumentos força a análise crítica e reduz pontos cegos."
+        },
+        {
+          "pergunta": "O que o viés de disponibilidade faz com nossa mente?",
+          "opcoes": [
+            "Melhora a memória de longo prazo",
+            "Faz julgarmos riscos pela facilidade com que lembramos exemplos",
+            "Elimina o cansaço mental"
+          ],
+          "correta": 1,
+          "explicacao": "Eventos vívidos ou recentes parecem mais prováveis do que realmente são."
+        }
+      ]
     },
     {
       "numero": 54,
@@ -56,6 +140,10 @@
       "data": "2026-11-10",
       "duracao": "07:50",
       "arquivo": "ep_054.json",
+      "ferramenta_treino": {
+        "nome": "Termo Positivo",
+        "url": "ferramentas/wordle.html"
+      },
       "resumo": "Como eliminar o ruído de notificações e aplicar a regra da única coisa para conquistar serenidade e produtividade real.",
       "niveis": {
         "iniciante": "Fazer tudo ao mesmo tempo cansa a mente. Escolha uma única prioridade pela manhã e proteja seus primeiros 45 minutos.",
@@ -66,8 +154,46 @@
         "titulo": "A Única Coisa",
         "autor": "Gary Keller",
         "plataforma": "Amazon",
-        "url": "https://www.amazon.com.br/s?k=A+Unica+Coisa+Gary+Keller"
-      }
+        "url": "https://www.amazon.com.br/s?k=A+Unica+Coisa+Gary+Keller",
+        "pilares": [
+          "1. A Pergunta Focada: qual única coisa torna o resto mais fácil?",
+          "2. Efeito Dominó: pequenas prioridades alinhadas derrubam metas gigantes.",
+          "3. Bloqueio de Tempo: proteja seu bloco matinal de foco profundo.",
+          "4. Dizer Não: proteja sua energia dizendo não ao urgente irrelevante."
+        ]
+      },
+      "quiz_questions": [
+        {
+          "pergunta": "Quanto tempo de atenção residual pode ser perdido a cada troca de contexto?",
+          "opcoes": [
+            "Cerca de 2 minutos",
+            "Até 23 minutos",
+            "Exatamente 5 segundos"
+          ],
+          "correta": 1,
+          "explicacao": "Alternar entre notificações e tarefas fragmenta a atenção por até 23 minutos."
+        },
+        {
+          "pergunta": "O que representa o Efeito Dominó Positivo?",
+          "opcoes": [
+            "Fazer 10 tarefas médias ao mesmo tempo",
+            "Concluir a tarefa-chave que simplifica todas as outras",
+            "Checar e-mails a cada 15 minutos"
+          ],
+          "correta": 1,
+          "explicacao": "Uma única ação alavancada gera impacto em cadeia sobre todo o seu dia."
+        },
+        {
+          "pergunta": "Qual é o melhor momento para proteger um bloco de foco único?",
+          "opcoes": [
+            "Nos primeiros minutos produtivos da manhã",
+            "Somente após responder todas as redes sociais",
+            "Durante reuniões simultâneas"
+          ],
+          "correta": 0,
+          "explicacao": "Pela manhã a reserva cognitiva está mais alta e menos fragmentada."
+        }
+      ]
     },
     {
       "numero": 53,
@@ -78,6 +204,10 @@
       "data": "2026-11-04",
       "duracao": "09:12",
       "arquivo": "ep_053.json",
+      "ferramenta_treino": {
+        "nome": "Momento Mágico",
+        "url": "ferramentas/magic.html"
+      },
       "resumo": "Estratégias práticas para equilibrar seus receptores de dopamina e recuperar o prazer nas pequenas vitórias do cotidiano.",
       "niveis": {
         "iniciante": "Rolagem infinita dá picos rápidos de prazer seguidos de cansaço. Trocar 15 minutos de tela por luz solar renova sua energia.",
@@ -88,8 +218,46 @@
         "titulo": "Nação Dopamina",
         "autor": "Anna Lembke",
         "plataforma": "Amazon",
-        "url": "https://www.amazon.com.br/s?k=Nacao+Dopamina+Anna+Lembke"
-      }
+        "url": "https://www.amazon.com.br/s?k=Nacao+Dopamina+Anna+Lembke",
+        "pilares": [
+          "1. Balança Prazer-Dor: todo pico artificial cobra um preço na homeostase.",
+          "2. Jejum de Estímulos: pausas intencionais recalibram os receptores D2.",
+          "3. Auto-vinculação: crie barreiras físicas entre você e o impulso digital.",
+          "4. Honestidade Radical: observe seus gatilhos emocionais sem julgamento."
+        ]
+      },
+      "quiz_questions": [
+        {
+          "pergunta": "O que acontece com os receptores D2 diante de estímulos digitais supranormais contínuos?",
+          "opcoes": [
+            "Eles se tornam mais sensíveis ao silêncio",
+            "Sofrem dessensibilização, reduzindo a motivação intrínseca",
+            "Duplicam a capacidade de leitura"
+          ],
+          "correta": 1,
+          "explicacao": "Excesso de picos artificiais reduz a resposta natural ao prazer cotidiano."
+        },
+        {
+          "pergunta": "O que significa criar 'alto atrito' para distrações passivas?",
+          "opcoes": [
+            "Deixar o celular longe ou deslogado para dificultar o uso automático",
+            "Aumentar o brilho da tela ao máximo",
+            "Instalar mais aplicativos de vídeo curto"
+          ],
+          "correta": 0,
+          "explicacao": "Pequenas barreiras físicas dão tempo para o córtex pré-frontal decidir."
+        },
+        {
+          "pergunta": "Qual prática matinal simples ajuda a recalibrar sua energia?",
+          "opcoes": [
+            "Rolagem infinita por 30 minutos na cama",
+            "Trocar 15 minutos de tela por exposição à luz solar natural",
+            "Abrir 12 abas de notícias ao acordar"
+          ],
+          "correta": 1,
+          "explicacao": "Luz natural regula o ciclo circadiano e evita picos precoces de dopamina artificial."
+        }
+      ]
     }
   ]
 }

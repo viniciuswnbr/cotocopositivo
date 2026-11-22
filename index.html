@@ -19,15 +19,47 @@
     <div class="nav-links" id="nav-links">
       <a href="index.html" class="active">Início</a>
       <a href="#ia-explica">IA Explica</a>
+      <a href="biblioteca.html" class="nav-gold">Biblioteca</a>
       <a href="jogos.html">Ferramentas & Jogos</a>
-      <a href="teleprompter.html" class="nav-gold">Teleprompter</a>
-      <a href="ebook.html" class="nav-emerald">Produtos & Livros</a>
+      <a href="teleprompter.html">Teleprompter</a>
+      <a href="ebook.html" class="nav-emerald">Guias & Produtos</a>
       <a href="comunidade.html">Comunidade</a>
       <a href="https://www.youtube.com/@cotocopositivo?sub_confirmation=1" target="_blank" rel="noopener" class="nav-yt">▶ YouTube</a>
     </div>
   </nav>
 
   <main class="container">
+    <!-- TERMÔMETRO DE IMPACTO POSITIVO -->
+    <section class="glass-card impact-thermometer" aria-label="Termômetro de Impacto Positivo">
+      <div class="impact-header">
+        <div>
+          <span class="badge badge-emerald">🌡️ TERMÔMETRO DE IMPACTO POSITIVO</span>
+          <h2 style="font-size: 1.15rem; font-weight: 800; margin-top: 6px;">Métricas em Tempo Real do Ecossistema @cotocopositivo</h2>
+        </div>
+        <span style="font-size: 0.78rem; color: var(--text-muted);" id="impact-updated-at">Sincronizado com index.json</span>
+      </div>
+      <div class="impact-grid">
+        <div class="impact-metric cyan">
+          <div style="font-size: 0.76rem; font-weight: 800; color: var(--cyan); letter-spacing: 0.08em;">HISTÓRIAS REAIS PUBLICADAS</div>
+          <div class="impact-value" id="impact-episodes-count">0</div>
+          <div class="impact-label">Episódios do IA Explica disponíveis</div>
+        </div>
+        <div class="impact-metric gold">
+          <div style="font-size: 0.76rem; font-weight: 800; color: var(--gold); letter-spacing: 0.08em;">LIVROS RECOMENDADOS</div>
+          <div class="impact-value" id="impact-books-count">0</div>
+          <div class="impact-label">Obras curadas com 4 pilares práticos</div>
+        </div>
+        <div class="impact-metric emerald">
+          <div style="font-size: 0.76rem; font-weight: 800; color: var(--emerald); letter-spacing: 0.08em;">APRENDIZADO POSITIVO</div>
+          <div class="impact-value"><span id="impact-minutes-count">0</span> <span style="font-size: 1rem; font-weight: 700;">min</span></div>
+          <div class="impact-label">Minutos de conteúdo transformador gerados</div>
+        </div>
+      </div>
+      <div class="impact-bar-track" aria-hidden="true">
+        <div class="impact-bar-fill" id="impact-bar-fill"></div>
+      </div>
+    </section>
+
     <!-- HERO COM MASCOTE ROBÓTICO ESTILIZADO -->
     <section class="hero">
       <div class="badge">🤖 ECOSSISTEMA NEURO-ALGORÍTMICO • @COTOCOPOSITIVO</div>
@@ -216,9 +248,10 @@
     </div>
     <div class="footer-nav">
       <a href="index.html">Início</a>
+      <a href="biblioteca.html">Biblioteca & 4 Pilares</a>
       <a href="jogos.html">Ferramentas & Jogos</a>
       <a href="teleprompter.html">Teleprompter IA Explica</a>
-      <a href="ebook.html">Produtos & Livros</a>
+      <a href="ebook.html">Guias & Produtos</a>
       <a href="comunidade.html">Comunidade & Pix</a>
     </div>
   </footer>

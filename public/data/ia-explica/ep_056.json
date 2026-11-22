@@ -6,6 +6,10 @@
   "youtube_video_id": "esIOVcYHSgo",
   "data": "2026-11-20",
   "duracao": "08:42",
+  "ferramenta_treino": {
+    "nome": "Simulação Positiva",
+    "url": "ferramentas/simulacao.html"
+  },
   "niveis": {
     "iniciante": {
       "titulo": "Nível 1 • Iniciante (A Metáfora da Trilha)",
@@ -25,27 +29,70 @@
     "autor": "James Clear",
     "motivo": "O guia definitivo sobre como pequenas mudanças de 1% ao dia geram resultados extraordinários por meio de sistemas sustentáveis.",
     "plataforma": "Amazon",
-    "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear"
+    "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear",
+    "pilares": [
+      "1. Torne Óbvio: desenhe gatilhos visuais claros no seu ambiente.",
+      "2. Torne Atraente: associe o novo hábito a uma recompensa positiva.",
+      "3. Torne Fácil: reduza o atrito com a regra dos 2 minutos.",
+      "4. Torne Satisfatório: celebre pequenas vitórias para fixar o circuito."
+    ]
   },
+  "quiz_questions": [
+    {
+      "pergunta": "Qual processo biológico acelera os sinais neurais quando repetimos um hábito?",
+      "opcoes": [
+        "Mielinização dos axônios",
+        "Desidratação sináptica",
+        "Bloqueio do córtex visual"
+      ],
+      "correta": 0,
+      "explicacao": "A mielina reveste os circuitos neurais repetidos, tornando a condução mais rápida e econômica."
+    },
+    {
+      "pergunta": "Qual é a duração recomendada da microação no Loop Neuro-Algorítmico?",
+      "opcoes": [
+        "60 minutos intensos",
+        "Apenas 2 minutos",
+        "3 horas sem pausa"
+      ],
+      "correta": 1,
+      "explicacao": "Microações de 2 minutos vencem a resistência inicial do cérebro e criam consistência."
+    },
+    {
+      "pergunta": "Como a IA atua no protocolo de reprogramação de hábitos?",
+      "opcoes": [
+        "Substituindo o sono profundo",
+        "Como âncora cognitiva e copiloto reflexivo",
+        "Eliminando a necessidade de prática"
+      ],
+      "correta": 1,
+      "explicacao": "Prompts de IA ajudam a revisar vitórias diárias e calibrar o próximo micro-passo."
+    }
+  ],
   "roteiro_teleprompter": [
     {
       "bloco": "ABERTURA (GANCHO)",
+      "tempo_seg": 0,
       "fala": "Olá, mente brilhante! Você já tentou mudar um hábito na segunda-feira e sentiu que na quarta-feira a bateria acabou? Hoje o IA Explica vai mostrar por que isso não é falta de disciplina — é apenas engenharia neural mal configurada."
     },
     {
       "bloco": "NÍVEL INICIANTE",
+      "tempo_seg": 25,
       "fala": "No nível Iniciante, pense no seu cérebro como uma floresta. Toda vez que você repete uma ação — seja checar o celular ansioso ou respirar fundo por um minuto — você está pisando na mesma trilha. Quanto mais você passa por ela, mais fácil o caminho fica."
     },
     {
       "bloco": "NÍVEL SÁBIO",
+      "tempo_seg": 65,
       "fala": "Subindo para o nível Sábio: a ciência chama isso de mielinização. Quando você pratica uma microação diária, seu cérebro reveste os neurônios com mielina, fazendo o sinal viajar mais rápido e gastando menos energia do córtex pré-frontal. É por isso que hábitos consolidados acontecem no automático."
     },
     {
       "bloco": "NÍVEL MESTRE POSITIVO",
+      "tempo_seg": 120,
       "fala": "E no nível Mestre Positivo, nós unimos neurociência com inteligência artificial: crie um gatilho claro pela manhã, execute uma microação de apenas dois minutos e celebre o avanço imediatamente. Use o Oráculo do Cotoco Positivo no nosso portal para calibrar seu foco todos os dias."
     },
     {
       "bloco": "LIVRO RECOMENDADO & ENCERRAMENTO",
+      "tempo_seg": 180,
       "fala": "Para aprofundar esse método, o livro recomendado de hoje é Hábitos Atômicos, de James Clear — o link oficial está logo aqui na vitrine do portal. Se este episódio trouxe clareza para o seu dia, inscreva-se no canal @cotocopositivo e até o próximo IA Explica!"
     }
   ]
