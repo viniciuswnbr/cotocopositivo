@@ -6,6 +6,8 @@
   <title>Estante Automática de Livros & Guias Oficiais — @cotocopositivo</title>
   <meta name="description" content="Estante automática de livros recomendados no IA Explica com os 4 pilares de cada obra e guias digitais oficiais do @cotocopositivo.">
   <meta name="theme-color" content="#0A0E17">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon-mascot.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -73,9 +75,48 @@
         <a href="index.html#ia-explica" class="btn btn-ghost btn-sm">← Voltar à Vitrine</a>
       </div>
 
+      <div class="filter-bar" id="library-category-filters" aria-label="Filtrar livros por categoria"></div>
+
       <div class="books-grid" id="library-books-grid">
         <p class="section-subtitle">Carregando estante automática de livros...</p>
       </div>
+
+      <!-- PRATELEIRA INTELIGENTE: QUEM LEU ESTE TAMBÉM GOSTOU -->
+      <div class="related-books-shelf" id="related-books-shelf"></div>
+    </section>
+
+    <!-- SUGESTÃO DE HISTÓRIAS PELA COMUNIDADE -->
+    <section class="glass-card" style="margin-bottom: 30px; border-color: rgba(0, 240, 255, 0.35);">
+      <div class="section-header" style="margin-bottom: 12px;">
+        <div>
+          <span class="badge">💡 COLABORAÇÃO DA COMUNIDADE</span>
+          <h2 class="section-title">Sugira uma História Real Positiva</h2>
+          <p class="section-subtitle">
+            Conhece um inventor, cientista, livro ou história de superação que merece virar episódio do <em>IA Explica</em>? Envie sua sugestão formatada para nossa fila editorial.
+          </p>
+        </div>
+      </div>
+
+      <form id="community-story-form" style="display:flex;flex-direction:column;gap:12px;" novalidate>
+        <div class="oracle-row">
+          <input type="text" id="story-title" class="input-neon" placeholder="Título ou tema da história (ex: Como Ada Lovelace imaginou a programação)..." required>
+          <input type="text" id="story-reference" class="input-neon" placeholder="Inventor, pessoa ou livro de referência..." required>
+        </div>
+        <div class="oracle-row">
+          <select id="story-category" class="input-neon" aria-label="Categoria da história">
+            <option value="Inovação">Inovação</option>
+            <option value="Mentalidade">Mentalidade</option>
+            <option value="Hábitos">Hábitos</option>
+            <option value="Biografias">Biografias</option>
+          </select>
+          <input type="text" id="story-author" class="input-neon" placeholder="Seu nome ou @ (opcional)">
+        </div>
+        <textarea id="story-reason" class="input-neon" rows="3" placeholder="Por que essa história positiva pode transformar o dia de alguém?" required></textarea>
+        <div class="card-actions-row">
+          <button type="submit" class="btn btn-emerald">🚀 Enviar Sugestão para Curadoria (+15 pts)</button>
+        </div>
+      </form>
+      <p id="community-story-status" style="font-size: 0.86rem; margin-top: 10px; min-height: 20px; font-weight: 700;"></p>
     </section>
 
     <!-- GUIAS DIGITAIS OFICIAIS @COTOCOPOSITIVO -->

@@ -1,6 +1,45 @@
 {
   "cleanUrls": true,
   "outputDirectory": ".",
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Service-Worker-Allowed", "value": "/" }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json; charset=utf-8" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/episodio",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|facebookexternalhit|Facebot|Twitterbot|TelegramBot|LinkedInBot|Slackbot|Discordbot).*"
+        }
+      ],
+      "destination": "/api/episodio"
+    },
+    {
+      "source": "/episodio.html",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|facebookexternalhit|Facebot|Twitterbot|TelegramBot|LinkedInBot|Slackbot|Discordbot).*"
+        }
+      ],
+      "destination": "/api/episodio"
+    }
+  ],
   "redirects": [
     {
       "source": "/yt",

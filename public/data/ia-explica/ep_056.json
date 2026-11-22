@@ -27,6 +27,7 @@
   "livro_apoio": {
     "titulo": "Hábitos Atômicos",
     "autor": "James Clear",
+    "categoria": "Hábitos",
     "motivo": "O guia definitivo sobre como pequenas mudanças de 1% ao dia geram resultados extraordinários por meio de sistemas sustentáveis.",
     "plataforma": "Amazon",
     "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear",
@@ -36,6 +37,20 @@
       "3. Torne Fácil: reduza o atrito com a regra dos 2 minutos.",
       "4. Torne Satisfatório: celebre pequenas vitórias para fixar o circuito."
     ]
+  },
+  "counterfactual": {
+    "titulo_sem": "O Mundo Sem Essa Descoberta",
+    "sem": "Sem compreender a neuroplasticidade e a regra dos 2 minutos, milhões de pessoas continuariam presas ao mito da força de vontade infinita, abandonando metas na primeira semana por exaustão cognitiva.",
+    "titulo_com": "O Impacto Real Alcançado",
+    "com": "Hoje sabemos que o cérebro adulto se molda por micro-repetições e mielinização: combinando gatilhos ambientais com feedback de IA, qualquer pessoa constrói rotinas saudáveis com 1% de esforço diário."
+  },
+  "collector_card": {
+    "nome": "Arquiteto da Mielina",
+    "inventor": "Santiago Ramón y Cajal & James Clear",
+    "raridade": "Lendária",
+    "criatividade": 92,
+    "persistencia": 96,
+    "impacto_social": 94
   },
   "quiz_questions": [
     {

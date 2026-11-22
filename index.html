@@ -6,6 +6,9 @@
   <title>@cotocopositivo — Portal Oficial • Neurociência, IA Explica & Bem-Estar</title>
   <meta name="description" content="Portal oficial do ecossistema @cotocopositivo: IA Explica, ferramentas de positividade, neurociência aplicada e guias práticos.">
   <meta name="theme-color" content="#0A0E17">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon-mascot.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -20,9 +23,9 @@
       <a href="index.html" class="active">Início</a>
       <a href="#ia-explica">IA Explica</a>
       <a href="biblioteca.html" class="nav-gold">Biblioteca</a>
+      <a href="desafio-30-dias.html" class="nav-emerald">Desafio 30 Dias</a>
       <a href="jogos.html">Ferramentas & Jogos</a>
-      <a href="teleprompter.html">Teleprompter</a>
-      <a href="ebook.html" class="nav-emerald">Guias & Produtos</a>
+      <a href="sobre.html">Mídia Kit</a>
       <a href="comunidade.html">Comunidade</a>
       <a href="https://www.youtube.com/@cotocopositivo?sub_confirmation=1" target="_blank" rel="noopener" class="nav-yt">▶ YouTube</a>
     </div>
@@ -154,16 +157,31 @@
         <a href="teleprompter.html" class="btn btn-ghost btn-sm">📝 Abrir Teleprompter</a>
       </div>
 
-      <!-- Episódio Mais Recente com Player YouTube Lazy -->
-      <div id="ia-featured-episode" class="featured-episode-shell">
-        <p class="section-subtitle">Carregando episódio mais recente...</p>
+      <!-- Abas: Episódios vs Meu Deck Super Trunfo -->
+      <div class="ia-tabs-bar" role="tablist" aria-label="Alternar entre Episódios e Meu Deck">
+        <button class="ia-tab-btn active" data-ia-tab="episodios" role="tab" aria-selected="true">📺 Episódios & Resumos</button>
+        <button class="ia-tab-btn" data-ia-tab="deck" role="tab" aria-selected="false">🃏 Meu Deck (<span id="deck-count-badge">0/0</span>)</button>
       </div>
 
-      <!-- Filtro Rápido por Tema -->
-      <div class="filter-bar" id="ia-theme-filters" aria-label="Filtrar episódios por tema"></div>
+      <div id="ia-tab-episodios">
+        <!-- Episódio Mais Recente com Player YouTube Lazy -->
+        <div id="ia-featured-episode" class="featured-episode-shell">
+          <p class="section-subtitle">Carregando episódio mais recente...</p>
+        </div>
 
-      <!-- Grid de Episódios -->
-      <div class="episodes-grid" id="ia-episodes-grid"></div>
+        <!-- Filtro Rápido por Tema -->
+        <div class="filter-bar" id="ia-theme-filters" aria-label="Filtrar episódios por tema"></div>
+
+        <!-- Grid de Episódios -->
+        <div class="episodes-grid" id="ia-episodes-grid"></div>
+      </div>
+
+      <div id="ia-tab-deck" style="display: none;">
+        <p class="section-subtitle">
+          Conclua a leitura de um episódio ou acerte o Quiz Relâmpago para desbloquear as cartas colecionáveis Super Trunfo do ecossistema <strong>@cotocopositivo</strong>.
+        </p>
+        <div class="deck-grid" id="ia-deck-grid"></div>
+      </div>
     </section>
 
     <!-- ORÁCULO DA IA DO COTOCO -->
@@ -253,9 +271,10 @@
     <div class="footer-nav">
       <a href="index.html">Início</a>
       <a href="biblioteca.html">Biblioteca & 4 Pilares</a>
+      <a href="desafio-30-dias.html">Desafio 30 Dias</a>
+      <a href="certificado.html">Certificado Mestre Positivo</a>
       <a href="jogos.html">Ferramentas & Jogos</a>
-      <a href="teleprompter.html">Teleprompter IA Explica</a>
-      <a href="ebook.html">Guias & Produtos</a>
+      <a href="sobre.html">Sobre & Mídia Kit</a>
       <a href="comunidade.html">Comunidade & Pix</a>
     </div>
   </footer>

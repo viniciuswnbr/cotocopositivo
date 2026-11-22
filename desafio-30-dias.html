@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafio 30 Dias de Ponto de Vista — @cotocopositivo</title>
+  <meta name="description" content="Jornada interativa de 30 dias inspirada no livro O Poder do Ponto de Vista: micro-reflexões de 1 minuto e exercícios práticos diários.">
+  <meta name="theme-color" content="#0A0E17">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon-mascot.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="index.html" class="logo">
+      <span class="logo-accent">@cotocopositivo</span>
+      <span class="logo-tag">DESAFIO 30 DIAS</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html">Início</a>
+      <a href="biblioteca.html" class="nav-gold">Biblioteca</a>
+      <a href="desafio-30-dias.html" class="active nav-emerald">Desafio 30 Dias</a>
+      <a href="jogos.html">Ferramentas & Jogos</a>
+      <a href="sobre.html">Mídia Kit</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="glass-card" style="margin-bottom: 24px; border-color: rgba(16, 185, 129, 0.4);">
+      <div class="section-header" style="margin-bottom: 12px;">
+        <div>
+          <span class="badge badge-emerald">📖 LIVRO: O PODER DO PONTO DE VISTA</span>
+          <h1 class="section-title" style="margin-top: 8px;">Desafio 30 Dias de Ponto de Vista</h1>
+          <p class="section-subtitle">
+            Cada dia desbloqueia uma micro-reflexão de 1 minuto + 1 exercício prático de mudança de perspectiva. Seu progresso fica salvo automaticamente.
+          </p>
+        </div>
+        <span class="stat-pill stat-pill-gold" id="desafio-progress-pill">0 / 30 dias</span>
+      </div>
+      <div class="impact-bar-track">
+        <div class="impact-bar-fill" id="desafio-progress-bar" style="width: 0%;"></div>
+      </div>
+    </section>
+
+    <section class="glass-card" id="day-detail-card" style="margin-bottom: 24px; border-color: rgba(0, 240, 255, 0.35);">
+      <p class="section-subtitle">Selecione um dia na grade abaixo para iniciar sua micro-reflexão.</p>
+    </section>
+
+    <section class="glass-card">
+      <h2 class="section-title" style="font-size: 1.25rem;">Grade Interativa dos 30 Dias</h2>
+      <div class="days-30-grid" id="days-30-grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>🌿 <strong>@cotocopositivo</strong> • Desafio 30 Dias de Ponto de Vista</p>
+    <div class="footer-nav">
+      <a href="index.html">Início</a>
+      <a href="biblioteca.html">Biblioteca</a>
+      <a href="certificado.html">Certificado</a>
+      <a href="sobre.html">Sobre & Mídia Kit</a>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const STORAGE_KEY = 'cotoco_desafio_30d';
+      const CHALLENGES = [
+        ['O Filtro da Atenção', 'Aquilo que você procura no seu dia é exatamente o que seu cérebro aprende a encontrar.', 'Anote 3 coisas boas que normalmente passariam despercebidas hoje.'],
+        ['Pausa Antes da Reação', 'Entre o estímulo e a resposta existe um espaço. É nesse espaço que mora sua liberdade.', 'Antes de responder a algo irritante hoje, conte 4 segundos inspirando.'],
+        ['Troca de Lente', 'Um obstáculo pode ser visto como bloqueio ou como dado de calibração.', 'Reescreva um problema atual começando com: "Isso está me ensinando a...".'],
+        ['Micro-Vitória Visível', 'O cérebro precisa ver progresso para liberar dopamina limpa e manter a motivação.', 'Divida uma tarefa adiada em um passo de apenas 2 minutos e faça agora.'],
+        ['Gratidão Específica', 'Gratidão genérica vira hábito vazio; gratidão específica cria novas conexões neurais.', 'Agradeça a alguém hoje citando exatamente o gesto que fez diferença.'],
+        ['Silêncio Digital', 'O excesso de ruído rouba sua capacidade de ouvir a própria intuição.', 'Fique 15 minutos hoje sem celular, apenas observando o ambiente.'],
+        ['Curiosidade no Lugar do Julgamento', 'Julgar fecha portas; perguntar abre caminhos de aprendizado.', 'Substitua uma crítica mental por uma pergunta curiosa: "Por que será que funciona assim?".'],
+        ['O Poder do Ainda', 'Dizer "não consigo" fecha o circuito; dizer "ainda não domino" ativa a neuroplasticidade.', 'Adicione a palavra "ainda" a uma habilidade que você quer desenvolver.'],
+        ['Visão de Drone', 'De perto, todo problema parece gigante. Do alto, ele é apenas parte do mapa.', 'Imagine como você verá a preocupação de hoje daqui a 6 meses.'],
+        ['Energia do Ambiente', 'Seu ambiente molda seus hábitos mais rápido do que sua força de vontade.', 'Organize apenas uma superfície (mesa ou criado-mudo) para gerar clareza visual.'],
+        ['Escuta Ativa', 'Ouvir para responder gera tensão; ouvir para compreender gera conexão.', 'Na próxima conversa, espere a pessoa terminar sem formular sua resposta antes.'],
+        ['Comparação Saudável', 'Compare seu hoje apenas com o seu ontem, nunca com os bastidores editados de outro.', 'Liste 1 evolução sua nos últimos 30 dias, por menor que pareça.'],
+        ['Erro como Protótipo', 'Na engenharia e na vida, o primeiro rascunho serve para revelar o que ajustar.', 'Encare um erro recente como versão 1.0 e defina o ajuste da versão 2.0.'],
+        ['Luz Natural Primeiro', 'A luz solar matinal regula seu relógio biológico e estabiliza o humor.', 'Exponha-se à luz natural por 5 minutos antes de abrir redes sociais.'],
+        ['Generosidade Anônima', 'Fazer o bem sem esperar retorno ativa circuitos profundos de bem-estar.', 'Faça um pequeno gesto gentil hoje sem contar para ninguém.'],
+        ['Menos Urgência, Mais Direção', 'Velocidade sem direção apenas acelera o cansaço.', 'Escolha uma única prioridade inegociável para hoje e proteja 30 minutos para ela.'],
+        ['Respiração Âncora', 'Quando a mente corre para o futuro, o corpo é a âncora para o agora.', 'Faça 3 ciclos de respiração 4-4-6 ao trocar de atividade.'],
+        ['Reenquadramento do Não', 'Um "não" recebido muitas vezes é proteção de energia para o "sim" certo.', 'Identifique um limite saudável que você precisa dizer esta semana.'],
+        ['Aprendiz Eterno', 'Quem se mantém curioso não envelhece emocionalmente.', 'Aprenda 1 conceito novo hoje em 5 minutos e explique-o em 1 frase simples.'],
+        ['Desapego do Perfeccionismo', 'Feito com carinho vale mais do que perfeito na gaveta.', 'Publique, envie ou conclua algo que estava segurando por medo de crítica.'],
+        ['Nutrição Mental', 'Você se torna aquilo que consome repetidamente nas telas.', 'Substitua 10 minutos de notícias pesadas por um livro ou episódio positivo.'],
+        ['Corpo em Movimento', 'Movimentar o corpo desbloqueia pensamentos estagnados.', 'Faça uma caminhada de 10 minutos ou alongue ombros e pescoço agora.'],
+        ['Perdão Prático', 'Guardar ressentimento é carregar peso extra numa subida longa.', 'Solte mentalmente uma pequena frustração desta semana e siga leve.'],
+        ['Pergunta Poderosa', 'A qualidade da sua vida reflete a qualidade das perguntas que você se faz.', 'Pergunte-se hoje: "O que posso tornar mais simples neste momento?".'],
+        ['Celebração Consciente', 'Não espere a linha de chegada para reconhecer seu esforço.', 'Comemore em voz alta uma tarefa concluída hoje.'],
+        ['Empatia com o Seu Ritmo', 'Cada estação tem sua velocidade; descansar também é parte da colheita.', 'Respeite seu limite de sono e desconecte-se 30 minutos antes de dormir.'],
+        ['Semente no Futuro', 'Pequenas ações de hoje são presentes para o seu eu de amanhã.', 'Deixe algo preparado hoje à noite (roupa, água ou anotação) para facilitar sua manhã.'],
+        ['Ponto de Vista do Outro', 'Entender a história alivia julgamentos automáticos.', 'Diante de alguém difícil hoje, imagine que batalha invisível essa pessoa pode estar enfrentando.'],
+        ['Síntese de Sabedoria', 'Conhecimento vira sabedoria quando se transforma em atitude simples.', 'Escolha os 2 exercícios favoritos deste desafio para manter na sua rotina fixa.'],
+        ['Mestre do Ponto de Vista', 'Você não controla tudo o que acontece, mas sempre escolhe a lente com que enxerga.', 'Compartilhe sua maior virada de chave destes 30 dias com alguém especial!']
+      ];
+
+      let completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      let selectedDay = completed.length < 30 ? completed.length + 1 : 1;
+
+      const gridEl = document.getElementById('days-30-grid');
+      const detailEl = document.getElementById('day-detail-card');
+      const pillEl = document.getElementById('desafio-progress-pill');
+      const barEl = document.getElementById('desafio-progress-bar');
+
+      const updateHeader = () => {
+        pillEl.textContent = `${completed.length} / 30 dias`;
+        barEl.style.width = `${Math.round((completed.length / 30) * 100)}%`;
+      };
+
+      const renderDetail = (dayNum) => {
+        selectedDay = dayNum;
+        const [title, reflection, exercise] = CHALLENGES[dayNum - 1];
+        const isDone = completed.includes(dayNum);
+        const shareMsg = `🌟 Concluí o Dia ${dayNum}/30 do Desafio "O Poder do Ponto de Vista" no @cotocopositivo: "${title}"! Acesse: ${window.location.href}`;
+
+        detailEl.innerHTML = `
+          <div class="ep-meta-row">
+            <span class="badge badge-gold">DIA ${String(dayNum).padStart(2, '0')} / 30</span>
+            <span class="badge ${isDone ? 'badge-emerald' : ''}">${isDone ? '✓ Concluído' : '⏳ Disponível'}</span>
+          </div>
+          <h2 style="font-size:1.35rem;margin:8px 0 12px;">${escapeHtml(title)}</h2>
+          <div class="level-box" style="margin-bottom:12px;">
+            <h4 style="color:var(--cyan);">⏱️ Micro-Reflexão de 1 Minuto</h4>
+            <p>${escapeHtml(reflection)}</p>
+          </div>
+          <div class="level-box sabio" style="margin-bottom:16px;">
+            <h4 style="color:var(--emerald);">🛠️ Exercício Prático de Mudança de Perspectiva</h4>
+            <p>${escapeHtml(exercise)}</p>
+          </div>
+          <div class="card-actions-row">
+            <button class="btn ${isDone ? 'btn-ghost' : 'btn-emerald'} btn-sm" id="complete-day-btn" ${isDone ? 'disabled' : ''}>
+              ${isDone ? '✓ Dia já concluído' : '✓ Concluir Dia (+10 pts)'}
+            </button>
+            <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(shareMsg)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm">
+              💬 Compartilhar Conquista
+            </a>
+          </div>
+        `;
+
+        document.getElementById('complete-day-btn')?.addEventListener('click', () => {
+          if (!completed.includes(dayNum)) {
+            completed.push(dayNum);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+            awardXpPoints(10, `Desafio Dia ${dayNum}`);
+            updateHeader();
+            renderGrid();
+            renderDetail(dayNum);
+          }
+        });
+      };
+
+      const renderGrid = () => {
+        gridEl.innerHTML = CHALLENGES.map(([title], idx) => {
+          const dayNum = idx + 1;
+          const isDone = completed.includes(dayNum);
+          const isActive = dayNum === selectedDay;
+          return `
+            <button type="button" class="day-tile ${isDone ? 'done' : ''} ${isActive ? 'active-day' : ''}" data-day="${dayNum}">
+              <span class="day-tile-num">${isDone ? '✓ ' : ''}${String(dayNum).padStart(2, '0')}</span>
+              <span class="day-tile-tag">${escapeHtml(title.slice(0, 18))}</span>
+            </button>
+          `;
+        }).join('');
+
+        gridEl.querySelectorAll('[data-day]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const d = Number(btn.getAttribute('data-day'));
+            renderDetail(d);
+            renderGrid();
+          });
+        });
+      };
+
+      updateHeader();
+      renderDetail(selectedDay);
+      renderGrid();
+    });
+  </script>
+</body>
+</html>

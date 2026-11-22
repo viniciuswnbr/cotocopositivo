@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0A0E17"/>
+      <stop offset="100%" stop-color="#111C33"/>
+    </linearGradient>
+    <linearGradient id="armorGrad" x1="120" y1="120" x2="392" y2="440" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1A253D"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="visorGrad" x1="150" y1="150" x2="360" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0A0E17"/>
+      <stop offset="100%" stop-color="#111C33"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect x="14" y="14" width="484" height="484" rx="102" stroke="#00F0FF" stroke-opacity="0.35" stroke-width="6"/>
+  <g transform="translate(36, 36) scale(2.0)">
+    <!-- Antena & Broto Esmeralda/Ouro -->
+    <path d="M110 30C100 16 88 21 92 7C106 9 110 21 110 30Z" fill="#10B981"/>
+    <path d="M110 30C120 16 132 21 128 7C114 9 110 21 110 30Z" fill="#34D399"/>
+    <circle cx="110" cy="32" r="6" fill="#FFD700"/>
+    <line x1="110" y1="36" x2="110" y2="54" stroke="#00F0FF" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- Cabeça Robótica -->
+    <rect x="60" y="54" width="100" height="72" rx="26" fill="url(#armorGrad)" stroke="#00F0FF" stroke-width="3.5"/>
+    <!-- Visor Neon -->
+    <rect x="70" y="64" width="80" height="50" rx="16" fill="url(#visorGrad)" stroke="#00F0FF" stroke-width="2"/>
+    <!-- Olhos Digitais Neon -->
+    <ellipse cx="90" cy="86" rx="8" ry="10" fill="#00F0FF"/>
+    <ellipse cx="130" cy="86" rx="8" ry="10" fill="#00F0FF"/>
+    <circle cx="93" cy="82" r="2.8" fill="#FFFFFF"/>
+    <circle cx="133" cy="82" r="2.8" fill="#FFFFFF"/>
+    <!-- Sorriso Esmeralda -->
+    <path d="M98 99Q110 108 122 99" stroke="#10B981" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+
+    <!-- Pescoço -->
+    <rect x="98" y="126" width="24" height="10" rx="4" fill="#334155"/>
+
+    <!-- Corpo Robótico -->
+    <rect x="68" y="136" width="84" height="64" rx="22" fill="url(#armorGrad)" stroke="#00F0FF" stroke-width="3.5"/>
+    <!-- Núcleo de Energia Ouro/Esmeralda -->
+    <rect x="88" y="150" width="44" height="28" rx="9" fill="#0A0E17" stroke="#10B981" stroke-width="2"/>
+    <polygon points="112,154 103,165 110,165 107,174 118,162 111,162" fill="#FFD700"/>
+
+    <!-- Braço Esquerdo (Cotoco Iluminado) -->
+    <path d="M68 148Q50 150 52 160Q54 168 68 165" fill="#111C33" stroke="#00F0FF" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="52" cy="160" r="5.5" fill="#10B981"/>
+
+    <!-- Braço Robótico Direito Articulado Acenando -->
+    <path d="M152 150L174 134L184 114" stroke="#00F0FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="174" cy="134" r="5" fill="#FFD700"/>
+    <circle cx="185" cy="110" r="9" fill="#10B981" stroke="#00F0FF" stroke-width="2"/>
+
+    <!-- Base / Pés -->
+    <rect x="80" y="200" width="22" height="10" rx="5" fill="#334155"/>
+    <rect x="118" y="200" width="22" height="10" rx="5" fill="#334155"/>
+  </g>
+</svg>

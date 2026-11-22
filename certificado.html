@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificado Mestre Positivo — @cotocopositivo</title>
+  <meta name="description" content="Emita seu Certificado Personalizado Mestre Positivo em alta resolução (1920x1080) ao atingir 150+ pontos no portal @cotocopositivo.">
+  <meta name="theme-color" content="#0A0E17">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon-mascot.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="index.html" class="logo">
+      <span class="logo-accent">@cotocopositivo</span>
+      <span class="logo-tag">CERTIFICADO</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html">Início</a>
+      <a href="biblioteca.html" class="nav-gold">Biblioteca</a>
+      <a href="desafio-30-dias.html" class="nav-emerald">Desafio 30 Dias</a>
+      <a href="jogos.html">Ferramentas & Jogos</a>
+      <a href="certificado.html" class="active">Certificado</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="glass-card" id="cert-locked-box" style="display: none; text-align: center; border-color: rgba(255, 215, 0, 0.35);">
+      <span class="badge badge-gold">🔒 PATENTE MESTRE POSITIVO NECESSÁRIA (150+ PTS)</span>
+      <h1 class="section-title" style="margin-top: 12px;">Falta pouco para o seu Certificado!</h1>
+      <p class="section-subtitle" id="cert-progress-msg" style="max-width: 580px; margin: 10px auto 20px;"></p>
+      <div class="card-actions-row" style="justify-content: center;">
+        <a href="index.html#ia-explica" class="btn">🧠 Ler Episódios & Fazer Quiz (+40 pts)</a>
+        <a href="desafio-30-dias.html" class="btn btn-emerald">📅 Desafio 30 Dias (+10 pts/dia)</a>
+        <a href="biblioteca.html" class="btn btn-gold">📚 Sugerir História (+15 pts)</a>
+      </div>
+    </section>
+
+    <section class="glass-card" id="cert-unlocked-box" style="display: none; border-color: rgba(255, 215, 0, 0.5);">
+      <div class="section-header" style="margin-bottom: 14px;">
+        <div>
+          <span class="badge badge-gold">👑 PATENTE MESTRE POSITIVO CONQUISTADA</span>
+          <h1 class="section-title" style="margin-top: 8px;">Emitir Certificado Oficial (1920x1080)</h1>
+          <p class="section-subtitle">Digite seu nome completo para gerar na hora seu certificado futurista em PNG com código de autenticidade.</p>
+        </div>
+      </div>
+
+      <div class="oracle-row">
+        <input type="text" id="cert-name-input" class="input-neon" placeholder="Digite seu nome completo..." maxlength="48">
+        <button class="btn btn-gold" id="cert-generate-btn">✨ Gerar Prévia</button>
+        <button class="btn btn-emerald" id="cert-download-btn">⬇️ Baixar Certificado PNG (1920x1080)</button>
+      </div>
+
+      <canvas id="cert-canvas" width="1920" height="1080" class="cert-canvas-preview" aria-label="Prévia do Certificado Mestre Positivo"></canvas>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>🌿 <strong>@cotocopositivo</strong> • Certificado Mestre Positivo</p>
+    <div class="footer-nav">
+      <a href="index.html">Início</a>
+      <a href="biblioteca.html">Biblioteca</a>
+      <a href="desafio-30-dias.html">Desafio 30 Dias</a>
+      <a href="sobre.html">Sobre & Mídia Kit</a>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pts = Number(localStorage.getItem('cotoco_xp_points') || 0);
+      const lockedBox = document.getElementById('cert-locked-box');
+      const unlockedBox = document.getElementById('cert-unlocked-box');
+      const msgEl = document.getElementById('cert-progress-msg');
+
+      if (pts < 150) {
+        lockedBox.style.display = 'block';
+        msgEl.textContent = `Você possui atualmente ${pts} pontos. Acumule mais ${150 - pts} pontos lendo episódios, respondendo quizzes ou completando dias do Desafio 30 Dias para desbloquear seu Certificado Mestre Positivo!`;
+        return;
+      }
+
+      unlockedBox.style.display = 'block';
+      const nameInput = document.getElementById('cert-name-input');
+      const canvas = document.getElementById('cert-canvas');
+      const ctx = canvas.getContext('2d');
+
+      let authCode = localStorage.getItem('cotoco_cert_auth_code');
+      if (!authCode) {
+        authCode = `COTOCO-MP-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+        localStorage.setItem('cotoco_cert_auth_code', authCode);
+      }
+
+      const drawCertificate = () => {
+        const visitorName = (nameInput.value || 'Mente Positiva').trim();
+        const today = new Date().toLocaleDateString('pt-BR');
+
+        // Fundo escuro futurista
+        const bg = ctx.createLinearGradient(0, 0, 1920, 1080);
+        bg.addColorStop(0, '#060A12');
+        bg.addColorStop(0.5, '#0A0E17');
+        bg.addColorStop(1, '#111C33');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, 1920, 1080);
+
+        // Glow radial sutil
+        const glow1 = ctx.createRadialGradient(320, 220, 40, 320, 220, 520);
+        glow1.addColorStop(0, 'rgba(0, 240, 255, 0.14)');
+        glow1.addColorStop(1, 'transparent');
+        ctx.fillStyle = glow1;
+        ctx.fillRect(0, 0, 1920, 1080);
+
+        const glow2 = ctx.createRadialGradient(1600, 860, 40, 1600, 860, 520);
+        glow2.addColorStop(0, 'rgba(255, 215, 0, 0.14)');
+        glow2.addColorStop(1, 'transparent');
+        ctx.fillStyle = glow2;
+        ctx.fillRect(0, 0, 1920, 1080);
+
+        // Borda dupla Ouro & Ciano
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 8;
+        roundRect(ctx, 42, 42, 1836, 996, 36, false, true);
+
+        ctx.strokeStyle = '#00F0FF';
+        ctx.lineWidth = 3;
+        roundRect(ctx, 64, 64, 1792, 952, 26, false, true);
+
+        // Mascote robótico @cotocopositivo vetorial no topo central
+        ctx.save();
+        ctx.translate(888, 108);
+        ctx.scale(1.3, 1.3);
+        // Antena
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(55, 6, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#00F0FF';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(55, 12);
+        ctx.lineTo(55, 24);
+        ctx.stroke();
+        // Cabeça & Visor
+        ctx.fillStyle = '#152036';
+        roundRect(ctx, 0, 24, 110, 76, 24, true, true);
+        ctx.fillStyle = '#0A0E17';
+        roundRect(ctx, 12, 34, 86, 52, 16, true, true);
+        ctx.fillStyle = '#00F0FF';
+        ctx.beginPath();
+        ctx.arc(36, 58, 8, 0, Math.PI * 2);
+        ctx.arc(74, 58, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#10B981';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(55, 68, 14, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx.stroke();
+        // Braço robótico acenando
+        ctx.strokeStyle = '#00F0FF';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(110, 88);
+        ctx.lineTo(132, 70);
+        ctx.lineTo(142, 46);
+        ctx.stroke();
+        ctx.fillStyle = '#10B981';
+        ctx.beginPath();
+        ctx.arc(143, 42, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Títulos
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#00F0FF';
+        ctx.font = '800 28px system-ui, sans-serif';
+        ctx.fillText('ECOSSISTEMA @COTOCOPOSITIVO • NEUROCIÊNCIA, IA & POSITIVIDADE', 960, 300);
+
+        ctx.fillStyle = '#FFD700';
+        ctx.font = '900 72px system-ui, sans-serif';
+        ctx.fillText('CERTIFICADO MESTRE POSITIVO', 960, 392);
+
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '600 30px system-ui, sans-serif';
+        ctx.fillText('Certificamos com honra e clareza neural que', 960, 476);
+
+        // Nome do homenageado
+        ctx.fillStyle = '#F8FAFC';
+        ctx.font = '900 78px system-ui, sans-serif';
+        ctx.fillText(visitorName, 960, 580);
+
+        // Linha dourada sob o nome
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.65)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(460, 610);
+        ctx.lineTo(1460, 610);
+        ctx.stroke();
+
+        ctx.fillStyle = '#CBD5E1';
+        ctx.font = '500 30px system-ui, sans-serif';
+        ctx.fillText(`atingiu ${pts} Pontos Positivos e dominou os protocolos de hábitos, foco e`, 960, 680);
+        ctx.fillText('pensamento crítico do portal IA Explica & @cotocopositivo.', 960, 726);
+
+        // Selos inferiores
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '700 24px system-ui, sans-serif';
+        ctx.fillText('DATA DE EMISSÃO', 150, 885);
+        ctx.fillStyle = '#10B981';
+        ctx.font = '800 32px system-ui, sans-serif';
+        ctx.fillText(today, 150, 930);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#FFD700';
+        ctx.font = '800 28px system-ui, sans-serif';
+        ctx.fillText('🤖 @COTOCOPOSITIVO', 960, 905);
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '600 22px system-ui, sans-serif';
+        ctx.fillText('cotocopositivo.vercel.app', 960, 940);
+
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '700 24px system-ui, sans-serif';
+        ctx.fillText('CÓDIGO DE AUTENTICIDADE', 1770, 885);
+        ctx.fillStyle = '#00F0FF';
+        ctx.font = '800 28px monospace';
+        ctx.fillText(authCode, 1770, 930);
+      };
+
+      drawCertificate();
+      document.getElementById('cert-generate-btn').addEventListener('click', drawCertificate);
+      nameInput.addEventListener('input', drawCertificate);
+
+      document.getElementById('cert-download-btn').addEventListener('click', () => {
+        drawCertificate();
+        canvas.toBlob((blob) => {
+          if (blob) {
+            triggerDownload(URL.createObjectURL(blob), 'certificado-mestre-positivo.png');
+          }
+        }, 'image/png');
+      });
+    });
+  </script>
+</body>
+</html>

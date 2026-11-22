@@ -83,7 +83,19 @@
       </div>
     </section>
 
-    <!-- 3. GERADOR DE FILA EDITORIAL (editorial_queue.json) -->
+    <!-- 3. SUGESTÕES DA COMUNIDADE (APROVAÇÃO 1-CLIQUE) -->
+    <section class="glass-card" style="margin-bottom: 24px; border-color: rgba(0, 240, 255, 0.35);">
+      <div class="section-header" style="margin-bottom: 12px;">
+        <div>
+          <span class="badge">📬 SUGESTÕES DA COMUNIDADE</span>
+          <h2 class="section-title">Histórias Positivas Enviadas pelos Visitantes</h2>
+          <p class="section-subtitle">Aprove com 1 clique para enviar diretamente para a <code>editorial_queue.json</code> abaixo.</p>
+        </div>
+      </div>
+      <div id="admin-community-suggestions" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </section>
+
+    <!-- 4. GERADOR DE FILA EDITORIAL (editorial_queue.json) -->
     <section class="glass-card" style="border-color: rgba(16, 185, 129, 0.4);">
       <div class="section-header" style="margin-bottom: 12px;">
         <div>
@@ -179,7 +191,54 @@
           } catch (_) {}
         }
         renderThemeSelector(store);
+        renderCommunitySuggestions();
         rebuildQueueJson();
+      }
+
+      function renderCommunitySuggestions() {
+        const box = document.getElementById('admin-community-suggestions');
+        if (!box) return;
+        const KEY = 'cotoco_community_suggestions';
+        const list = JSON.parse(localStorage.getItem(KEY) || '[]');
+        const pending = list.filter((s) => s.status !== 'aprovada');
+
+        if (pending.length === 0) {
+          box.innerHTML = '<p class="section-subtitle" style="font-size:0.86rem;">Nenhuma sugestão pendente no momento. Visitantes podem enviar histórias em Biblioteca.</p>';
+          return;
+        }
+
+        box.innerHTML = pending.map((s) => `
+          <div class="admin-bar-row" style="gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <span class="badge badge-gold">${s.tema}</span>
+                <strong style="margin-left:8px;font-size:0.95rem;">${s.titulo_sugerido}</strong>
+              </div>
+              <button class="btn btn-emerald btn-sm" data-approve-sug="${s.id}">✅ Aprovar para Fila Editorial (1 Clique)</button>
+            </div>
+            <div style="font-size:0.82rem;color:var(--cyan);">Referência: ${s.livro_referencia} • Enviado por: ${s.autor_sugestao}</div>
+            <div style="font-size:0.84rem;color:var(--text-muted);">${s.motivo_comunidade}</div>
+          </div>
+        `).join('');
+
+        box.querySelectorAll('[data-approve-sug]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-approve-sug');
+            const idx = list.findIndex((item) => item.id === id);
+            if (idx === -1) return;
+            const approved = list[idx];
+            approved.status = 'aprovada';
+            localStorage.setItem(KEY, JSON.stringify(list));
+
+            customQueueItems.push({
+              topic: approved.titulo_sugerido,
+              book: approved.livro_referencia,
+              tema: approved.tema
+            });
+            renderCommunitySuggestions();
+            rebuildQueueJson();
+          });
+        });
       }
 
       function renderEpisodesRanking(epClicks) {
@@ -286,7 +345,7 @@
         customQueueItems.forEach((item, idx) => {
           queue.unshift({
             id: `custom_${idx + 1}`,
-            tema: 'Tema Campeão Personalizado',
+            tema: item.tema || 'Tema Campeão Personalizado',
             titulo_sugerido: item.topic,
             prioridade: 'alta',
             livro_referencia: item.book || 'A definir',

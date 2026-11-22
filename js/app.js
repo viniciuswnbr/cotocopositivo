@@ -15,6 +15,7 @@ let ytPollInterval = null;
 let syncTimerInterval = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  initPwaRegistration();
   initMobileNav();
   initUtmTracking();
   initGamification();
@@ -25,8 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
   initDailyDose();
   initNewsletter();
   initBookClubPoll();
+  initCommunityStoryForm();
+  initIaTabs();
   loadPortalData();
 });
+
+function initPwaRegistration() {
+  if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+}
 
 function initVisitorCounter() {
   const el = document.getElementById('visitor-counter-value');
@@ -160,10 +169,13 @@ async function loadPortalData() {
         await renderFeaturedEpisode(featuredContainer, latest);
         renderThemeFilters(filterBar, episodesCache);
         renderEpisodesGrid(gridContainer, episodesCache);
+        const deckGrid = document.getElementById('ia-deck-grid');
+        if (deckGrid) renderDeckGrid(deckGrid, episodesCache);
       }
     }
 
     if (libraryGrid) {
+      initLibraryCategoryFilters(episodesCache);
       renderLibraryShelf(libraryGrid, episodesCache);
     }
   } catch (err) {
@@ -286,10 +298,13 @@ async function renderFeaturedEpisode(container, ep) {
         </div>
         <div class="card-actions-row" style="margin-top: 10px;">
           <a href="${escapeHtml(trainUrl)}" class="btn btn-emerald btn-sm">🎮 Treinar essa habilidade agora (${escapeHtml(trainName)})</a>
+          <a href="episodio.html?ep=${numStr}" class="btn btn-ghost btn-sm">🔗 Página do Episódio</a>
           <a href="teleprompter.html?ep=${ep.numero}" class="btn btn-ghost btn-sm" data-ep-track="${ep.numero}">🎙️ Teleprompter</a>
         </div>
       </div>
     </div>
+
+    ${buildCounterfactualHtml(ep, detailed, 'featured-cf')}
 
     <!-- PAINEL DO LEITOR SINCRONIZADO -->
     <div id="reader-sync-panel" class="reader-sync-panel" aria-label="Leitor Sincronizado do Episódio">
@@ -322,6 +337,7 @@ async function renderFeaturedEpisode(container, ep) {
   `;
 
   initSyncReaderControls(blocks);
+  initCounterfactualControls(container);
 
   const levelsBtn = document.getElementById('featured-levels-btn');
   if (levelsBtn) levelsBtn.addEventListener('click', () => openEpisodeModal(ep));
@@ -374,6 +390,7 @@ function initSyncReaderControls(blocks) {
       if (episodesCache[0]) {
         trackEpisodeClick(episodesCache[0], 'leitor_sincronizado');
         awardEpisodeXp(episodesCache[0].numero);
+        unlockCardForEpisode(episodesCache[0].numero, true);
       }
     }
   });
@@ -551,6 +568,7 @@ async function openEpisodeModal(ep) {
 
   trackEpisodeClick(ep, 'modal_3_niveis');
   awardEpisodeXp(ep.numero);
+  unlockCardForEpisode(ep.numero, true);
 
   modal.classList.add('open');
   body.innerHTML = '<p style="color: var(--cyan);">Carregando os 3 Níveis e Quiz do episódio...</p>';
@@ -588,6 +606,8 @@ async function openEpisodeModal(ep) {
       <p>${escapeHtml(mesText || 'Resumo em preparação.')}</p>
     </div>
 
+    ${buildCounterfactualHtml(ep, detailed, 'modal-cf')}
+
     ${
       livro
         ? `
@@ -617,6 +637,8 @@ async function openEpisodeModal(ep) {
 
   const pocketBtn = document.getElementById('modal-pocket-btn');
   if (pocketBtn) pocketBtn.addEventListener('click', () => downloadPocketSummary(ep, detailed));
+
+  initCounterfactualControls(body);
 
   const quizContainer = document.getElementById('modal-quiz-container');
   if (quizContainer) renderQuizSection(quizContainer, ep, detailed);
@@ -712,10 +734,8 @@ function renderQuizSection(container, ep, detailed) {
 
 function showQuizOutcome(resultArea, ep, correct, total, onRetry) {
   if (correct >= 2) {
-    const unlocked = JSON.parse(localStorage.getItem('cotoco_unlocked_cards') || '[]');
-    if (!unlocked.includes(ep.numero)) {
-      unlocked.push(ep.numero);
-      localStorage.setItem('cotoco_unlocked_cards', JSON.stringify(unlocked));
+    const newlyUnlocked = unlockCardForEpisode(ep.numero, false);
+    if (newlyUnlocked) {
       addPositiveCoins(20);
     }
     awardQuizXp(ep.numero);
@@ -1014,16 +1034,56 @@ function triggerDownload(url, filename) {
 /* ==========================================================================
    Estante Automática de Livros (/biblioteca.html)
    ========================================================================== */
+let activeBookCategory = 'Todos';
+
+function getBookCategory(ep) {
+  if (ep.livro_apoio && ep.livro_apoio.categoria) return ep.livro_apoio.categoria;
+  const tema = (ep.tema || '').toLowerCase();
+  if (tema.includes('hábit') || tema.includes('foco')) return 'Hábitos';
+  if (tema.includes('inov') || tema.includes('ia')) return 'Inovação';
+  if (tema.includes('bio')) return 'Biografias';
+  return 'Mentalidade';
+}
+
+function initLibraryCategoryFilters(episodes) {
+  const filterBar = document.getElementById('library-category-filters');
+  const libraryGrid = document.getElementById('library-books-grid');
+  if (!filterBar || !libraryGrid) return;
+
+  const categories = ['Todos', 'Mentalidade', 'Hábitos', 'Inovação', 'Biografias'];
+  filterBar.innerHTML = categories
+    .map(
+      (c) =>
+        `<button class="filter-chip ${c === activeBookCategory ? 'active' : ''}" data-book-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
+    )
+    .join('');
+
+  filterBar.querySelectorAll('[data-book-cat]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeBookCategory = btn.getAttribute('data-book-cat');
+      initLibraryCategoryFilters(episodes);
+      renderLibraryShelf(libraryGrid, episodes);
+    });
+  });
+}
+
 function renderLibraryShelf(container, episodes) {
-  const books = episodes.filter((ep) => ep.livro_apoio && ep.livro_apoio.titulo);
+  const allBooks = episodes.filter((ep) => ep.livro_apoio && ep.livro_apoio.titulo);
+  const books =
+    activeBookCategory === 'Todos'
+      ? allBooks
+      : allBooks.filter((ep) => getBookCategory(ep) === activeBookCategory);
+
   if (books.length === 0) {
-    container.innerHTML = '<p class="section-subtitle">Nenhum livro encontrado no momento.</p>';
+    container.innerHTML = '<p class="section-subtitle">Nenhum livro encontrado nesta categoria no momento.</p>';
+    renderRelatedBooksShelf(allBooks[0], allBooks);
     return;
   }
 
   container.innerHTML = books
     .map((ep) => {
       const livro = ep.livro_apoio;
+      const cat = getBookCategory(ep);
       const numStr = String(ep.numero).padStart(3, '0');
       const pilares = Array.isArray(livro.pilares) ? livro.pilares : [];
       const trainUrl = (ep.ferramenta_treino && ep.ferramenta_treino.url) || 'jogos.html';
@@ -1033,6 +1093,7 @@ function renderLibraryShelf(container, episodes) {
           <div>
             <div class="ep-meta-row">
               <span class="badge badge-gold">EP #${numStr}</span>
+              <span class="badge badge-emerald">${escapeHtml(cat)}</span>
               <span class="badge">${escapeHtml(ep.tema)}</span>
             </div>
             <h3 style="font-size: 1.2rem;">${escapeHtml(livro.titulo)}</h3>
@@ -1052,7 +1113,8 @@ function renderLibraryShelf(container, episodes) {
             <a href="${escapeHtml(livro.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" data-track-book="${escapeHtml(livro.titulo)}" data-track-author="${escapeHtml(livro.autor || '')}" data-track-ep="${ep.numero}">
               Comprar na ${escapeHtml(livro.plataforma || 'Amazon')} ↗
             </a>
-            <button class="btn btn-sm" data-lib-pocket="${ep.numero}">📱 Bolso 1080x1920</button>
+            <button class="btn btn-sm" data-lib-related="${ep.numero}">✨ Similares</button>
+            <button class="btn btn-ghost btn-sm" data-lib-pocket="${ep.numero}">📱 Bolso</button>
             <a href="${escapeHtml(trainUrl)}" class="btn btn-emerald btn-sm">🎮 Treinar</a>
           </div>
         </article>
@@ -1069,6 +1131,16 @@ function renderLibraryShelf(container, episodes) {
       downloadPocketSummary(ep, detailed);
     });
   });
+
+  container.querySelectorAll('button[data-lib-related]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const num = Number(btn.getAttribute('data-lib-related'));
+      const ep = allBooks.find((item) => item.numero === num);
+      if (ep) renderRelatedBooksShelf(ep, allBooks);
+    });
+  });
+
+  renderRelatedBooksShelf(books[0], allBooks);
 }
 
 /* ==========================================================================
@@ -1297,6 +1369,10 @@ function renderHeaderRankBar() {
     ? `Faltam ${rank.next - pts} pts para ${rank.nextName}`
     : 'Patente Máxima Alcançada!';
 
+  const certButtonHtml = pts >= 150
+    ? `<a href="certificado.html" class="rank-cert-btn">🏆 Emitir Certificado Mestre Positivo</a>`
+    : '';
+
   bar.innerHTML = `
     <div class="rank-identity">
       <span class="rank-badge-pill">${rank.icon} ${rank.name}</span>
@@ -1308,6 +1384,7 @@ function renderHeaderRankBar() {
       </div>
       <span class="rank-next-label">${nextLabel}</span>
     </div>
+    ${certButtonHtml}
   `;
 }
 
@@ -1647,4 +1724,295 @@ function initBookClubPoll() {
   };
 
   render();
+}
+
+
+/* ==========================================================================
+   ONDA 2: Comparador Contrafactual, Deck Super Trunfo, Biblioteca Inteligente
+   & Sugestão de Histórias da Comunidade
+   ========================================================================== */
+function getCounterfactualData(ep, detailed) {
+  const cf = (detailed && detailed.counterfactual) || ep.counterfactual;
+  if (cf && cf.sem && cf.com) return cf;
+  return {
+    titulo_sem: 'O Mundo Sem Essa Invenção',
+    sem: `Sem os princípios de ${ep.tema || 'neurociência aplicada'} deste episódio, dependeríamos apenas de tentativa e erro, com maior desgaste emocional e sobrecarga mental.`,
+    titulo_com: 'O Impacto Real Alcançado',
+    com: `Aplicando o protocolo prático do EP #${String(ep.numero).padStart(3, '0')}, transformamos conhecimento científico em microações diárias de alto impacto positivo.`
+  };
+}
+
+function buildCounterfactualHtml(ep, detailed, uid = 'cf') {
+  const cf = getCounterfactualData(ep, detailed);
+  return `
+    <div class="counterfactual-card" data-cf-root="${uid}">
+      <div class="counterfactual-header">
+        <div>
+          <span class="badge">⚖️ CENÁRIO CONTRAFACTUAL</span>
+          <h4 style="font-size: 1.02rem; margin-top: 6px;">E Se Não Tivesse Acontecido?</h4>
+        </div>
+        <div class="counterfactual-toggle-btns">
+          <button type="button" class="cf-mode-btn" data-cf-btn="sem">🌪️ Mundo Sem</button>
+          <button type="button" class="cf-mode-btn active-emerald" data-cf-btn="com">🚀 Impacto Real</button>
+        </div>
+      </div>
+
+      <div class="counterfactual-stage">
+        <div class="cf-panel cf-panel-coral" data-cf-panel="sem" style="display: none;">
+          <div style="font-size: 0.78rem; font-weight: 800; color: #FDA4AF; letter-spacing: 0.06em; margin-bottom: 6px;">
+            🌪️ ${escapeHtml(cf.titulo_sem || 'O MUNDO SEM ESSA INVENÇÃO').toUpperCase()}
+          </div>
+          <p style="font-size: 0.92rem; color: var(--text-main); line-height: 1.55;">${escapeHtml(cf.sem)}</p>
+        </div>
+        <div class="cf-panel cf-panel-emerald" data-cf-panel="com">
+          <div style="font-size: 0.78rem; font-weight: 800; color: var(--gold); letter-spacing: 0.06em; margin-bottom: 6px;">
+            🚀 ${escapeHtml(cf.titulo_com || 'O IMPACTO REAL ALCANÇADO').toUpperCase()}
+          </div>
+          <p style="font-size: 0.92rem; color: var(--text-main); line-height: 1.55;">${escapeHtml(cf.com)}</p>
+        </div>
+      </div>
+
+      <div class="cf-slider-wrap">
+        <span style="font-size: 0.76rem; color: #FDA4AF; font-weight: 700;">Sem</span>
+        <input type="range" min="0" max="100" value="100" class="cf-range-slider" data-cf-slider aria-label="Alternar entre Mundo Sem e Impacto Real">
+        <span style="font-size: 0.76rem; color: var(--emerald); font-weight: 700;">Impacto</span>
+      </div>
+    </div>
+  `;
+}
+
+function initCounterfactualControls(scopeEl) {
+  if (!scopeEl) return;
+  scopeEl.querySelectorAll('[data-cf-root]').forEach((root) => {
+    const semPanel = root.querySelector('[data-cf-panel="sem"]');
+    const comPanel = root.querySelector('[data-cf-panel="com"]');
+    const btnSem = root.querySelector('[data-cf-btn="sem"]');
+    const btnCom = root.querySelector('[data-cf-btn="com"]');
+    const slider = root.querySelector('[data-cf-slider]');
+
+    const setMode = (showCom) => {
+      if (semPanel) semPanel.style.display = showCom ? 'none' : 'block';
+      if (comPanel) comPanel.style.display = showCom ? 'block' : 'none';
+      if (btnSem) btnSem.classList.toggle('active-coral', !showCom);
+      if (btnCom) btnCom.classList.toggle('active-emerald', showCom);
+      if (slider) slider.value = showCom ? '100' : '0';
+    };
+
+    if (btnSem) btnSem.addEventListener('click', () => setMode(false));
+    if (btnCom) btnCom.addEventListener('click', () => setMode(true));
+    if (slider) {
+      slider.addEventListener('input', () => {
+        setMode(Number(slider.value) >= 50);
+      });
+    }
+  });
+}
+
+function getCardData(ep) {
+  const card = ep.collector_card || {};
+  return {
+    nome: card.nome || `Guardião EP #${String(ep.numero).padStart(3, '0')}`,
+    inventor: card.inventor || (ep.livro_apoio && ep.livro_apoio.autor) || '@cotocopositivo',
+    raridade: card.raridade || 'Rara',
+    criatividade: Number(card.criatividade || 88),
+    persistencia: Number(card.persistencia || 90),
+    impacto_social: Number(card.impacto_social || 92)
+  };
+}
+
+function unlockCardForEpisode(epNum, silent = false) {
+  const unlocked = JSON.parse(localStorage.getItem('cotoco_unlocked_cards') || '[]');
+  if (!unlocked.includes(epNum)) {
+    unlocked.push(epNum);
+    localStorage.setItem('cotoco_unlocked_cards', JSON.stringify(unlocked));
+    const deckGrid = document.getElementById('ia-deck-grid');
+    if (deckGrid && episodesCache.length > 0) renderDeckGrid(deckGrid, episodesCache);
+    if (!silent) showCotocoToast(`🃏 Carta do EP #${String(epNum).padStart(3, '0')} adicionada ao Meu Deck!`);
+    return true;
+  }
+  return false;
+}
+
+function initIaTabs() {
+  const tabBtns = document.querySelectorAll('[data-ia-tab]');
+  const episodesPane = document.getElementById('ia-tab-episodios');
+  const deckPane = document.getElementById('ia-tab-deck');
+  if (tabBtns.length === 0 || !episodesPane || !deckPane) return;
+
+  tabBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-ia-tab');
+      tabBtns.forEach((b) => b.classList.toggle('active', b === btn));
+      episodesPane.style.display = target === 'episodios' ? 'block' : 'none';
+      deckPane.style.display = target === 'deck' ? 'block' : 'none';
+      if (target === 'deck') {
+        const deckGrid = document.getElementById('ia-deck-grid');
+        if (deckGrid && episodesCache.length > 0) renderDeckGrid(deckGrid, episodesCache);
+      }
+    });
+  });
+}
+
+function buildMiniMascotSvg() {
+  return `<svg width="68" height="68" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="110" cy="32" r="6" fill="#FFD700"/>
+    <line x1="110" y1="36" x2="110" y2="54" stroke="#00F0FF" stroke-width="4" stroke-linecap="round"/>
+    <rect x="60" y="54" width="100" height="72" rx="26" fill="#152036" stroke="#00F0FF" stroke-width="4"/>
+    <rect x="70" y="64" width="80" height="50" rx="16" fill="#0A0E17" stroke="#00F0FF" stroke-width="2"/>
+    <ellipse cx="90" cy="86" rx="8" ry="10" fill="#00F0FF"/>
+    <ellipse cx="130" cy="86" rx="8" ry="10" fill="#00F0FF"/>
+    <path d="M98 99Q110 108 122 99" stroke="#10B981" stroke-width="3.5" stroke-linecap="round"/>
+    <rect x="68" y="136" width="84" height="60" rx="22" fill="#152036" stroke="#00F0FF" stroke-width="4"/>
+    <polygon points="112,152 103,164 110,164 107,174 118,161 111,161" fill="#FFD700"/>
+    <path d="M152 150L174 134L184 114" stroke="#00F0FF" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="185" cy="110" r="9" fill="#10B981" stroke="#00F0FF" stroke-width="2"/>
+  </svg>`;
+}
+
+function renderDeckGrid(container, episodes) {
+  const unlocked = JSON.parse(localStorage.getItem('cotoco_unlocked_cards') || '[]');
+  const countEl = document.getElementById('deck-count-badge');
+  if (countEl) countEl.textContent = `${unlocked.length}/${episodes.length}`;
+
+  container.innerHTML = episodes
+    .map((ep) => {
+      const isUnlocked = unlocked.includes(ep.numero);
+      const numStr = String(ep.numero).padStart(3, '0');
+      const card = getCardData(ep);
+
+      if (!isUnlocked) {
+        return `
+          <article class="trunfo-card locked">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="badge">EP #${numStr}</span>
+              <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;">🔒 Bloqueada</span>
+            </div>
+            <div class="trunfo-avatar-wrap">${buildMiniMascotSvg()}</div>
+            <div>
+              <h4 style="font-size:1rem;color:var(--text-muted);">Carta Misteriosa #${numStr}</h4>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
+                Conclua a leitura ou o quiz do episódio "${escapeHtml(ep.titulo.slice(0, 42))}..." para desbloquear.
+              </p>
+            </div>
+            <button class="btn btn-ghost btn-sm" data-deck-open="${ep.numero}">🧠 Ler & Desbloquear</button>
+          </article>
+        `;
+      }
+
+      return `
+        <article class="trunfo-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+            <span class="badge badge-gold">EP #${numStr} • ${escapeHtml(card.raridade)}</span>
+            <span class="badge badge-emerald">✓ Conquistada</span>
+          </div>
+          <div class="trunfo-avatar-wrap">${buildMiniMascotSvg()}</div>
+          <div>
+            <h4 style="font-size:1.05rem;color:var(--gold);">${escapeHtml(card.nome)}</h4>
+            <div style="font-size:0.8rem;color:var(--cyan);font-weight:700;">${escapeHtml(card.inventor)}</div>
+          </div>
+          <div class="trunfo-stats">
+            <div class="trunfo-stat-row">
+              <div class="trunfo-stat-label"><span>Criatividade</span><span>${card.criatividade}</span></div>
+              <div class="trunfo-stat-bar"><div class="trunfo-stat-fill" style="width:${card.criatividade}%;"></div></div>
+            </div>
+            <div class="trunfo-stat-row">
+              <div class="trunfo-stat-label"><span>Persistência</span><span>${card.persistencia}</span></div>
+              <div class="trunfo-stat-bar"><div class="trunfo-stat-fill" style="width:${card.persistencia}%;"></div></div>
+            </div>
+            <div class="trunfo-stat-row">
+              <div class="trunfo-stat-label"><span>Impacto Social</span><span>${card.impacto_social}</span></div>
+              <div class="trunfo-stat-bar"><div class="trunfo-stat-fill" style="width:${card.impacto_social}%;"></div></div>
+            </div>
+          </div>
+        </article>
+      `;
+    })
+    .join('');
+
+  container.querySelectorAll('[data-deck-open]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const num = Number(btn.getAttribute('data-deck-open'));
+      const ep = episodesCache.find((e) => e.numero === num);
+      if (ep) openEpisodeModal(ep);
+    });
+  });
+}
+
+function renderRelatedBooksShelf(baseEp, allBooks) {
+  const shelf = document.getElementById('related-books-shelf');
+  if (!shelf || !baseEp || !baseEp.livro_apoio) return;
+
+  const baseCat = getBookCategory(baseEp);
+  const sameCat = allBooks.filter((e) => e.numero !== baseEp.numero && getBookCategory(e) === baseCat);
+  const related = (sameCat.length > 0 ? sameCat : allBooks.filter((e) => e.numero !== baseEp.numero)).slice(0, 3);
+
+  shelf.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <div>
+        <span class="badge badge-gold">✨ QUEM LEU "${escapeHtml(baseEp.livro_apoio.titulo.toUpperCase())}" TAMBÉM GOSTOU</span>
+        <p class="section-subtitle" style="font-size:0.86rem;margin-top:4px;">
+          Cruzamento automático na categoria <strong>${escapeHtml(baseCat)}</strong> com links afiliados oficiais:
+        </p>
+      </div>
+    </div>
+    <div class="related-books-grid">
+      ${related
+        .map((ep) => {
+          const l = ep.livro_apoio;
+          return `
+            <div class="glass-card-subtle" style="padding:14px;">
+              <span class="badge badge-emerald">${escapeHtml(getBookCategory(ep))}</span>
+              <h4 style="font-size:1rem;margin:8px 0 4px;">${escapeHtml(l.titulo)}</h4>
+              <div style="font-size:0.82rem;color:var(--gold);margin-bottom:10px;">${escapeHtml(l.autor || '')}</div>
+              <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" data-track-book="${escapeHtml(l.titulo)}" data-track-author="${escapeHtml(l.autor || '')}" data-track-ep="${ep.numero}">
+                Ver na ${escapeHtml(l.plataforma || 'Amazon')} ↗
+              </a>
+            </div>
+          `;
+        })
+        .join('')}
+    </div>
+  `;
+}
+
+function initCommunityStoryForm() {
+  const form = document.getElementById('community-story-form');
+  const statusEl = document.getElementById('community-story-status');
+  if (!form || !statusEl) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = (document.getElementById('story-title')?.value || '').trim();
+    const reference = (document.getElementById('story-reference')?.value || '').trim();
+    const category = (document.getElementById('story-category')?.value || 'Inovação').trim();
+    const reason = (document.getElementById('story-reason')?.value || '').trim();
+    const author = (document.getElementById('story-author')?.value || 'Comunidade @cotocopositivo').trim();
+
+    if (title.length < 5 || reference.length < 3 || reason.length < 10) {
+      statusEl.style.color = 'var(--gold)';
+      statusEl.textContent = '⚠️ Preencha o título (mín. 5 caracteres), referência e motivo inspirador (mín. 10 caracteres).';
+      return;
+    }
+
+    const KEY = 'cotoco_community_suggestions';
+    const list = JSON.parse(localStorage.getItem(KEY) || '[]');
+    const item = {
+      id: `sug_${Date.now()}`,
+      tema: category,
+      titulo_sugerido: title,
+      prioridade: 'alta',
+      livro_referencia: reference,
+      motivo_comunidade: reason,
+      autor_sugestao: author,
+      status: 'pendente_aprovacao',
+      criado_em: new Date().toISOString()
+    };
+    list.unshift(item);
+    localStorage.setItem(KEY, JSON.stringify(list));
+
+    statusEl.style.color = 'var(--emerald)';
+    statusEl.textContent = '✅ História positiva enviada para a curadoria! Ela já está pronta para aprovação em 1 clique no /admin.';
+    form.reset();
+    awardXpPoints(15, 'Sugestão da Comunidade');
+  });
 }

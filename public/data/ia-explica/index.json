@@ -25,6 +25,7 @@
       "livro_apoio": {
         "titulo": "Hábitos Atômicos",
         "autor": "James Clear",
+        "categoria": "Hábitos",
         "plataforma": "Amazon",
         "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear",
         "pilares": [
@@ -33,6 +34,20 @@
           "3. Torne Fácil: reduza o atrito com a regra dos 2 minutos.",
           "4. Torne Satisfatório: celebre pequenas vitórias para fixar o circuito."
         ]
+      },
+      "counterfactual": {
+        "titulo_sem": "O Mundo Sem Essa Descoberta",
+        "sem": "Sem compreender a neuroplasticidade e a regra dos 2 minutos, dependeríamos apenas de força de vontade bruta — falhando sempre que o cansaço batesse.",
+        "titulo_com": "O Impacto Real Alcançado",
+        "com": "A ciência dos micro-hábitos aliada a prompts de IA transforma esforço em trilhas neurais automáticas em apenas 21 dias."
+      },
+      "collector_card": {
+        "nome": "Arquiteto da Mielina",
+        "inventor": "Santiago Ramón y Cajal & James Clear",
+        "raridade": "Lendária",
+        "criatividade": 92,
+        "persistencia": 96,
+        "impacto_social": 94
       },
       "quiz_questions": [
         {
@@ -89,6 +104,7 @@
       "livro_apoio": {
         "titulo": "Rápido e Devagar: Duas Formas de Pensar",
         "autor": "Daniel Kahneman",
+        "categoria": "Mentalidade",
         "plataforma": "Amazon",
         "url": "https://www.amazon.com.br/s?k=Rapido+e+Devagar+Daniel+Kahneman",
         "pilares": [
@@ -97,6 +113,20 @@
           "3. Ancoragem Consciente: questione o primeiro número ou impressão recebida.",
           "4. Aversão à Perda: avalie ganhos e riscos com métricas objetivas."
         ]
+      },
+      "counterfactual": {
+        "titulo_sem": "O Mundo Sem Essa Descoberta",
+        "sem": "Sem o mapeamento dos vieses cognitivos, decisões financeiras, médicas e pessoais seguiriam reféns do impulso emocional sem nenhum antídoto racional.",
+        "titulo_com": "O Impacto Real Alcançado",
+        "com": "A teoria dos dois sistemas revolucionou a economia comportamental e hoje capacita prompts críticos de IA que evitam armadilhas mentais."
+      },
+      "collector_card": {
+        "nome": "Guardião do Sistema 2",
+        "inventor": "Daniel Kahneman & Amos Tversky",
+        "raridade": "Épica",
+        "criatividade": 94,
+        "persistencia": 91,
+        "impacto_social": 95
       },
       "quiz_questions": [
         {
@@ -153,6 +183,7 @@
       "livro_apoio": {
         "titulo": "A Única Coisa",
         "autor": "Gary Keller",
+        "categoria": "Hábitos",
         "plataforma": "Amazon",
         "url": "https://www.amazon.com.br/s?k=A+Unica+Coisa+Gary+Keller",
         "pilares": [
@@ -161,6 +192,20 @@
           "3. Bloqueio de Tempo: proteja seu bloco matinal de foco profundo.",
           "4. Dizer Não: proteja sua energia dizendo não ao urgente irrelevante."
         ]
+      },
+      "counterfactual": {
+        "titulo_sem": "O Mundo Sem Essa Descoberta",
+        "sem": "Presos na ilusão da multitarefa, gastaríamos horas apagando incêndios urgentes e terminaríamos o dia exaustos sem avançar no que realmente importa.",
+        "titulo_com": "O Impacto Real Alcançado",
+        "com": "O princípio do Efeito Dominó ensina a proteger blocos de foco único, multiplicando resultados reais com menos estresse e mais serenidade."
+      },
+      "collector_card": {
+        "nome": "Mestre do Dominó",
+        "inventor": "Gary Keller & Jay Papasan",
+        "raridade": "Rara",
+        "criatividade": 88,
+        "persistencia": 93,
+        "impacto_social": 89
       },
       "quiz_questions": [
         {
@@ -217,6 +262,7 @@
       "livro_apoio": {
         "titulo": "Nação Dopamina",
         "autor": "Anna Lembke",
+        "categoria": "Mentalidade",
         "plataforma": "Amazon",
         "url": "https://www.amazon.com.br/s?k=Nacao+Dopamina+Anna+Lembke",
         "pilares": [
@@ -225,6 +271,20 @@
           "3. Auto-vinculação: crie barreiras físicas entre você e o impulso digital.",
           "4. Honestidade Radical: observe seus gatilhos emocionais sem julgamento."
         ]
+      },
+      "counterfactual": {
+        "titulo_sem": "O Mundo Sem Essa Descoberta",
+        "sem": "Sem entender a balança prazer-dor dos receptores D2, aceitaríamos a ansiedade e a apatia da rolagem infinita como algo inevitável da era digital.",
+        "titulo_com": "O Impacto Real Alcançado",
+        "com": "A higiene da dopamina devolve às pessoas o controle da própria atenção, resgatando o prazer genuíno no silêncio, na leitura e nas relações reais."
+      },
+      "collector_card": {
+        "nome": "Alquimista da Dopamina",
+        "inventor": "Dra. Anna Lembke",
+        "raridade": "Épica",
+        "criatividade": 90,
+        "persistencia": 92,
+        "impacto_social": 96
       },
       "quiz_questions": [
         {
