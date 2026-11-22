@@ -73,9 +73,11 @@ const CotocoShare = {
   registerPositiveCompletion() {
     const coins = Number(localStorage.getItem('cotoco_coins') || 100) + 20;
     const streak = Number(localStorage.getItem('cotoco_streak') || 1);
+    const xp = Number(localStorage.getItem('cotoco_xp_points') || 0) + 20;
     localStorage.setItem('cotoco_coins', String(coins));
     localStorage.setItem('cotoco_streak', String(streak));
-    return { coins, streak };
+    localStorage.setItem('cotoco_xp_points', String(xp));
+    return { coins, streak, xp };
   },
 
   show({ gameTitle = 'Desafio Positivo', message = '', customWppText = '', onNextRound = null } = {}) {

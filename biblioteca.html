@@ -29,6 +29,37 @@
   </nav>
 
   <main class="container">
+    <!-- NEWSLETTER PRÓPRIA + PACK DOS 10 MAIORES APRENDIZADOS -->
+    <section class="glass-card" style="margin-bottom: 30px; border-color: rgba(255, 215, 0, 0.35);">
+      <div class="section-header" style="margin-bottom: 8px;">
+        <div>
+          <span class="badge badge-gold">🎁 PRESENTE EXCLUSIVO • CLUBE DO LIVRO</span>
+          <h2 class="section-title">Pack: Os 10 Maiores Aprendizados dos Mestres Positivos</h2>
+          <p class="section-subtitle">
+            Receba nossa curadoria semanal do <em>IA Explica</em> e libere o download imediato do PDF especial com os 10 princípios essenciais.
+          </p>
+        </div>
+      </div>
+      <form id="newsletter-form" class="newsletter-form-row" novalidate>
+        <input type="email" id="newsletter-email" class="input-neon" placeholder="Digite seu melhor e-mail..." required aria-label="Seu melhor e-mail">
+        <button type="submit" class="btn btn-gold" id="newsletter-submit-btn">⬇️ Liberar Pack em PDF Agora</button>
+      </form>
+      <p id="newsletter-status" style="font-size: 0.86rem; margin-top: 10px; min-height: 20px; color: var(--emerald); font-weight: 700;"></p>
+    </section>
+
+    <!-- VOTAÇÃO DO CLUBE DO LIVRO: PRÓXIMO LIVRO DO IA EXPLICA -->
+    <section class="glass-card" style="margin-bottom: 30px; border-color: rgba(0, 240, 255, 0.3);">
+      <div class="section-header" style="margin-bottom: 8px;">
+        <div>
+          <span class="badge">🗳️ ENQUETE EM TEMPO REAL • 1 CLIQUE</span>
+          <h2 class="section-title">Próximo Livro do IA Explica</h2>
+          <p class="section-subtitle">Escolha qual obra você quer ver destrinchada nos 3 Níveis e 4 Pilares no próximo episódio:</p>
+        </div>
+        <span class="stat-pill stat-pill-cyan" id="poll-total-votes">0 votos</span>
+      </div>
+      <div class="poll-grid" id="book-club-poll"></div>
+    </section>
+
     <section class="glass-card" style="margin-bottom: 30px;">
       <div class="section-header" style="margin-bottom: 12px;">
         <div>

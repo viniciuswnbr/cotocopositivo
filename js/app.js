@@ -6,6 +6,7 @@
 
 const INDEX_URL = 'public/data/ia-explica/index.json';
 const DATA_DIR = 'public/data/ia-explica/';
+const NEWSLETTER_ENDPOINT = ''; // Opcional: cole aqui sua URL Formspree ou Web3Forms
 
 let episodesCache = [];
 let activeTheme = 'Todos';
@@ -15,10 +16,15 @@ let syncTimerInterval = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
+  initUtmTracking();
+  initGamification();
   initPositiveStatus();
   initVisitorCounter();
   initOracle();
   initRandomGameButton();
+  initDailyDose();
+  initNewsletter();
+  initBookClubPoll();
   loadPortalData();
 });
 
@@ -280,7 +286,7 @@ async function renderFeaturedEpisode(container, ep) {
         </div>
         <div class="card-actions-row" style="margin-top: 10px;">
           <a href="${escapeHtml(trainUrl)}" class="btn btn-emerald btn-sm">🎮 Treinar essa habilidade agora (${escapeHtml(trainName)})</a>
-          <a href="teleprompter.html?ep=${ep.numero}" class="btn btn-ghost btn-sm">🎙️ Teleprompter</a>
+          <a href="teleprompter.html?ep=${ep.numero}" class="btn btn-ghost btn-sm" data-ep-track="${ep.numero}">🎙️ Teleprompter</a>
         </div>
       </div>
     </div>
@@ -365,6 +371,10 @@ function initSyncReaderControls(blocks) {
     panel.classList.toggle('open');
     if (panel.classList.contains('open')) {
       initYouTubeSyncListener(blocks, setActiveBlock);
+      if (episodesCache[0]) {
+        trackEpisodeClick(episodesCache[0], 'leitor_sincronizado');
+        awardEpisodeXp(episodesCache[0].numero);
+      }
     }
   });
 
@@ -539,6 +549,9 @@ async function openEpisodeModal(ep) {
   const body = document.getElementById('episode-modal-body');
   if (!modal || !body) return;
 
+  trackEpisodeClick(ep, 'modal_3_niveis');
+  awardEpisodeXp(ep.numero);
+
   modal.classList.add('open');
   body.innerHTML = '<p style="color: var(--cyan);">Carregando os 3 Níveis e Quiz do episódio...</p>';
 
@@ -584,7 +597,7 @@ async function openEpisodeModal(ep) {
           <div style="font-weight: 800; font-size: 1.02rem; margin-top: 2px;">${escapeHtml(livro.titulo)}</div>
           <div style="font-size: 0.85rem; color: var(--text-muted);">${escapeHtml(livro.autor || '')}</div>
         </div>
-        <a href="${escapeHtml(livro.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm">
+        <a href="${escapeHtml(livro.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" data-track-book="${escapeHtml(livro.titulo)}" data-track-author="${escapeHtml(livro.autor || '')}" data-track-ep="${ep.numero}">
           Ver na ${escapeHtml(livro.plataforma || 'Amazon')} ↗
         </a>
       </div>
@@ -705,6 +718,7 @@ function showQuizOutcome(resultArea, ep, correct, total, onRetry) {
       localStorage.setItem('cotoco_unlocked_cards', JSON.stringify(unlocked));
       addPositiveCoins(20);
     }
+    awardQuizXp(ep.numero);
 
     const svgMarkup = buildCollectibleSvg(ep);
     resultArea.innerHTML = `
@@ -821,6 +835,8 @@ function downloadSvgAsPng(svgString, filename, width, height) {
    Resumo de Bolso (1080x1920) via HTML5 Canvas
    ========================================================================== */
 function downloadPocketSummary(ep, detailed) {
+  awardPocketXp(ep.numero);
+  trackEpisodeClick(ep, 'resumo_bolso');
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
   canvas.height = 1920;
@@ -1033,7 +1049,7 @@ function renderLibraryShelf(container, episodes) {
           </div>
 
           <div class="card-actions-row" style="padding-top: 12px; border-top: 1px solid var(--border-subtle);">
-            <a href="${escapeHtml(livro.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm">
+            <a href="${escapeHtml(livro.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" data-track-book="${escapeHtml(livro.titulo)}" data-track-author="${escapeHtml(livro.autor || '')}" data-track-ep="${ep.numero}">
               Comprar na ${escapeHtml(livro.plataforma || 'Amazon')} ↗
             </a>
             <button class="btn btn-sm" data-lib-pocket="${ep.numero}">📱 Bolso 1080x1920</button>
@@ -1080,4 +1096,555 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/* ==========================================================================
+   1. Rastreamento UTM & Cliques em Episódios/Livros (LocalStorage + Export)
+   ========================================================================== */
+const ANALYTICS_KEY = 'cotoco_analytics_v1';
+
+function getAnalyticsStore() {
+  try {
+    const raw = localStorage.getItem(ANALYTICS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        utmSources: parsed.utmSources || {},
+        utmHistory: Array.isArray(parsed.utmHistory) ? parsed.utmHistory : [],
+        episodeClicks: parsed.episodeClicks || {},
+        bookClicks: parsed.bookClicks || {}
+      };
+    }
+  } catch (_) {}
+  return { utmSources: {}, utmHistory: [], episodeClicks: {}, bookClicks: {} };
+}
+
+function saveAnalyticsStore(store) {
+  try {
+    localStorage.setItem(ANALYTICS_KEY, JSON.stringify(store));
+  } catch (_) {}
+}
+
+function initUtmTracking() {
+  const params = new URLSearchParams(window.location.search);
+  const utmSource = (params.get('utm_source') || '').trim().toLowerCase();
+  const utmMedium = (params.get('utm_medium') || '').trim().toLowerCase();
+
+  if (utmSource) {
+    const sessionFlag = `cotoco_utm_logged_${utmSource}`;
+    if (!sessionStorage.getItem(sessionFlag)) {
+      const store = getAnalyticsStore();
+      store.utmSources[utmSource] = (store.utmSources[utmSource] || 0) + 1;
+      store.utmHistory.unshift({
+        source: utmSource,
+        medium: utmMedium || 'direct',
+        path: window.location.pathname,
+        ts: new Date().toISOString()
+      });
+      store.utmHistory = store.utmHistory.slice(0, 200);
+      saveAnalyticsStore(store);
+      sessionStorage.setItem(sessionFlag, '1');
+    }
+  }
+
+  // Deep link ?ep=56 abre o episódio automaticamente quando carregado
+  const epParam = Number(params.get('ep'));
+  if (epParam > 0) {
+    const waitAndOpen = setInterval(() => {
+      if (episodesCache.length > 0) {
+        clearInterval(waitAndOpen);
+        const found = episodesCache.find((e) => e.numero === epParam);
+        if (found) openEpisodeModal(found);
+      }
+    }, 150);
+    setTimeout(() => clearInterval(waitAndOpen), 5000);
+  }
+}
+
+function trackEpisodeClick(ep, action = 'view') {
+  if (!ep || !ep.numero) return;
+  const store = getAnalyticsStore();
+  const key = String(ep.numero);
+  const prev = store.episodeClicks[key] || {
+    numero: ep.numero,
+    titulo: ep.titulo || `Episódio #${ep.numero}`,
+    tema: ep.tema || 'Geral',
+    clicks: 0
+  };
+  prev.clicks += 1;
+  prev.lastAction = action;
+  prev.lastAt = new Date().toISOString();
+  store.episodeClicks[key] = prev;
+  saveAnalyticsStore(store);
+}
+
+function trackBookClick(titulo, autor = '', epNum = null) {
+  if (!titulo) return;
+  const store = getAnalyticsStore();
+  const prev = store.bookClicks[titulo] || {
+    titulo,
+    autor,
+    ep: epNum,
+    clicks: 0
+  };
+  prev.clicks += 1;
+  prev.lastAt = new Date().toISOString();
+  store.bookClicks[titulo] = prev;
+  saveAnalyticsStore(store);
+}
+
+document.addEventListener('click', (e) => {
+  const bookLink = e.target.closest('[data-track-book]');
+  if (bookLink) {
+    trackBookClick(
+      bookLink.getAttribute('data-track-book'),
+      bookLink.getAttribute('data-track-author') || '',
+      Number(bookLink.getAttribute('data-track-ep')) || null
+    );
+  }
+  const epLink = e.target.closest('[data-ep-track]');
+  if (epLink) {
+    const num = Number(epLink.getAttribute('data-ep-track'));
+    const ep = episodesCache.find((item) => item.numero === num);
+    if (ep) trackEpisodeClick(ep, 'teleprompter');
+  }
+});
+
+window.CotocoAnalytics = {
+  get: getAnalyticsStore,
+  exportLog() {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      ...getAnalyticsStore()
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    triggerDownload(URL.createObjectURL(blob), `cotoco-analytics-${new Date().toISOString().slice(0, 10)}.json`);
+  },
+  reset() {
+    localStorage.removeItem(ANALYTICS_KEY);
+  },
+  seedDemo() {
+    const demo = {
+      utmSources: {
+        youtube: 42,
+        instagram: 28,
+        spotify_ia: 19,
+        spotify_reflexoes: 11,
+        facebook: 9
+      },
+      utmHistory: [
+        { source: 'youtube', medium: 'bio_desc', path: '/', ts: new Date().toISOString() },
+        { source: 'instagram', medium: 'bio', path: '/', ts: new Date().toISOString() }
+      ],
+      episodeClicks: {
+        '56': { numero: 56, titulo: 'Como a Neuroplasticidade e a IA Reprogramam Hábitos em 21 Dias', tema: 'Neurociência', clicks: 34 },
+        '55': { numero: 55, titulo: 'Rápido e Devagar: Como Evitar Vieses Cognitivos Usando Prompts Críticos', tema: 'IA & Produtividade', clicks: 27 },
+        '54': { numero: 54, titulo: 'A Única Coisa: Foco Profundo Contra a Sobrecarga Digital', tema: 'Hábitos & Foco', clicks: 21 },
+        '53': { numero: 53, titulo: 'Higiene da Dopamina: Recarregando a Mente sem Telas', tema: 'Bem-Estar Digital', clicks: 15 }
+      },
+      bookClicks: {
+        'Hábitos Atômicos': { titulo: 'Hábitos Atômicos', autor: 'James Clear', ep: 56, clicks: 18 },
+        'Rápido e Devagar: Duas Formas de Pensar': { titulo: 'Rápido e Devagar: Duas Formas de Pensar', autor: 'Daniel Kahneman', ep: 55, clicks: 14 },
+        'A Única Coisa': { titulo: 'A Única Coisa', autor: 'Gary Keller', ep: 54, clicks: 11 },
+        'Nação Dopamina': { titulo: 'Nação Dopamina', autor: 'Anna Lembke', ep: 53, clicks: 9 }
+      }
+    };
+    saveAnalyticsStore(demo);
+    return demo;
+  }
+};
+
+/* ==========================================================================
+   2. Gamificação de Patentes no Cabeçalho (LocalStorage)
+   ========================================================================== */
+const XP_KEY = 'cotoco_xp_points';
+
+function getRankInfo(pts) {
+  if (pts >= 150) {
+    return { name: 'Mestre Positivo', icon: '👑', min: 150, next: null, pct: 100 };
+  }
+  if (pts >= 80) {
+    return { name: 'Sábio', icon: '🦉', min: 80, next: 150, nextName: 'Mestre Positivo', pct: Math.round(((pts - 80) / 70) * 100) };
+  }
+  if (pts >= 30) {
+    return { name: 'Iniciante', icon: '⚡', min: 30, next: 80, nextName: 'Sábio', pct: Math.round(((pts - 30) / 50) * 100) };
+  }
+  return { name: 'Visitante', icon: '🌱', min: 0, next: 30, nextName: 'Iniciante', pct: Math.round((pts / 30) * 100) };
+}
+
+function initGamification() {
+  const nav = document.querySelector('.nav-bar');
+  if (!nav) return;
+
+  let bar = document.getElementById('header-rank-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'header-rank-bar';
+    bar.className = 'header-rank-bar';
+    bar.setAttribute('aria-label', 'Progresso de Patente no Portal');
+    nav.insertAdjacentElement('afterend', bar);
+  }
+  renderHeaderRankBar();
+}
+
+function renderHeaderRankBar() {
+  const bar = document.getElementById('header-rank-bar');
+  if (!bar) return;
+
+  const pts = Number(localStorage.getItem(XP_KEY) || 0);
+  const rank = getRankInfo(pts);
+  const nextLabel = rank.next
+    ? `Faltam ${rank.next - pts} pts para ${rank.nextName}`
+    : 'Patente Máxima Alcançada!';
+
+  bar.innerHTML = `
+    <div class="rank-identity">
+      <span class="rank-badge-pill">${rank.icon} ${rank.name}</span>
+      <span style="color: var(--cyan);">${pts} pts</span>
+    </div>
+    <div class="rank-progress-wrap">
+      <div class="rank-track" role="progressbar" aria-valuenow="${rank.pct}" aria-valuemin="0" aria-valuemax="100">
+        <div class="rank-fill" style="width: ${Math.max(4, rank.pct)}%;"></div>
+      </div>
+      <span class="rank-next-label">${nextLabel}</span>
+    </div>
+  `;
+}
+
+function awardXpPoints(amount, reason = '') {
+  const prevPts = Number(localStorage.getItem(XP_KEY) || 0);
+  const prevRank = getRankInfo(prevPts).name;
+  const nextPts = prevPts + amount;
+  localStorage.setItem(XP_KEY, String(nextPts));
+  renderHeaderRankBar();
+
+  const newRank = getRankInfo(nextPts);
+  if (newRank.name !== prevRank) {
+    showCotocoToast(`🎉 Subiu de patente: ${newRank.icon} ${newRank.name}! (+${amount} pts)`);
+  } else if (reason) {
+    showCotocoToast(`+${amount} pts (${reason}) • Total: ${nextPts} pts`);
+  }
+}
+
+function awardEpisodeXp(epNum) {
+  const key = 'cotoco_xp_eps';
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  if (!list.includes(epNum)) {
+    list.push(epNum);
+    localStorage.setItem(key, JSON.stringify(list));
+    awardXpPoints(15, `Episódio #${epNum}`);
+  }
+}
+
+function awardQuizXp(epNum) {
+  const key = 'cotoco_xp_quizzes';
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  if (!list.includes(epNum)) {
+    list.push(epNum);
+    localStorage.setItem(key, JSON.stringify(list));
+    awardXpPoints(25, `Quiz EP #${epNum}`);
+  }
+}
+
+function awardPocketXp(epNum) {
+  const key = 'cotoco_xp_pockets';
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  if (!list.includes(epNum)) {
+    list.push(epNum);
+    localStorage.setItem(key, JSON.stringify(list));
+    awardXpPoints(10, `Resumo de Bolso #${epNum}`);
+  }
+}
+
+function showCotocoToast(msg) {
+  let toast = document.getElementById('cotoco-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'cotoco-toast';
+    toast.className = 'cotoco-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window.__cotocoToastTimer);
+  window.__cotocoToastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
+}
+
+/* ==========================================================================
+   3. Botão "Dose Diária de Positividade" na Home
+   ========================================================================== */
+function initDailyDose() {
+  const btn = document.getElementById('daily-dose-btn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    if (episodesCache.length === 0) {
+      try {
+        const res = await fetch(INDEX_URL);
+        if (res.ok) {
+          const data = await res.json();
+          episodesCache = Array.isArray(data.episodios) ? data.episodios : [];
+        }
+      } catch (_) {}
+    }
+    if (episodesCache.length === 0) {
+      showCotocoToast('Não foi possível sortear um episódio agora.');
+      return;
+    }
+    const picked = episodesCache[Math.floor(Math.random() * episodesCache.length)];
+    openDailyDoseModal(picked);
+  });
+}
+
+function openDailyDoseModal(ep) {
+  const modal = document.getElementById('episode-modal');
+  const body = document.getElementById('episode-modal-body');
+  if (!modal || !body) return;
+
+  trackEpisodeClick(ep, 'dose_diaria');
+  awardEpisodeXp(ep.numero);
+
+  const numStr = String(ep.numero).padStart(3, '0');
+  const niveis = ep.niveis || {};
+  const historia = ep.resumo || (typeof niveis.iniciante === 'object' ? niveis.iniciante.texto : niveis.iniciante) || '';
+  const dicaMestre = (typeof niveis.mestre_positivo === 'object' ? niveis.mestre_positivo.texto : niveis.mestre_positivo) || '';
+  const portalUrl = `${window.location.origin}/?ep=${ep.numero}`;
+  const shareText = `✨ Dose Diária @cotocopositivo (EP #${numStr}): "${ep.titulo}" — Dica do Mestre Positivo: ${dicaMestre} Acesse: ${portalUrl}`;
+
+  modal.classList.add('open');
+  body.innerHTML = `
+    <div class="dose-card-animated">
+      <div class="ep-meta-row">
+        <span class="badge badge-gold">✨ DOSE DIÁRIA DE POSITIVIDADE</span>
+        <span class="badge">EP #${numStr} • ${escapeHtml(ep.tema)}</span>
+      </div>
+
+      <h2 style="font-size: 1.38rem; margin-bottom: 12px; color: var(--text-main);">
+        ${escapeHtml(ep.titulo)}
+      </h2>
+
+      <div class="level-box" style="margin-bottom: 12px;">
+        <h4 style="color: var(--cyan);">📖 História Resumida</h4>
+        <p>${escapeHtml(historia)}</p>
+      </div>
+
+      <div class="dose-master-tip">
+        <div style="font-size: 0.76rem; font-weight: 800; color: var(--gold); letter-spacing: 0.08em; margin-bottom: 4px;">
+          👑 DICA PRÁTICA DO MESTRE POSITIVO
+        </div>
+        <p style="font-size: 0.95rem; color: var(--text-main); line-height: 1.55;">
+          ${escapeHtml(dicaMestre)}
+        </p>
+      </div>
+
+      <div class="card-actions-row" style="margin-top: 16px;">
+        <button class="btn btn-gold btn-sm" id="dose-copy-btn">📋 Copiar Dose + Link</button>
+        <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}" target="_blank" rel="noopener" class="btn btn-emerald btn-sm">💬 Compartilhar no WhatsApp</a>
+        <button class="btn btn-sm" id="dose-reroll-btn">🎲 Sortear Outra Dose</button>
+        <button class="btn btn-ghost btn-sm" id="dose-open-full-btn">🧠 Ver 3 Níveis & Quiz</button>
+      </div>
+      <p id="dose-copy-feedback" style="font-size: 0.82rem; color: var(--emerald); margin-top: 8px; min-height: 18px; font-weight: 700;"></p>
+    </div>
+  `;
+
+  const copyBtn = document.getElementById('dose-copy-btn');
+  const fbEl = document.getElementById('dose-copy-feedback');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        if (fbEl) fbEl.textContent = '✅ Dose Diária e link copiados para a área de transferência!';
+      } catch (_) {
+        if (fbEl) fbEl.textContent = `🔗 Link: ${portalUrl}`;
+      }
+    });
+  }
+
+  const rerollBtn = document.getElementById('dose-reroll-btn');
+  if (rerollBtn) {
+    rerollBtn.addEventListener('click', () => {
+      const others = episodesCache.filter((e) => e.numero !== ep.numero);
+      const pool = others.length > 0 ? others : episodesCache;
+      openDailyDoseModal(pool[Math.floor(Math.random() * pool.length)]);
+    });
+  }
+
+  const fullBtn = document.getElementById('dose-open-full-btn');
+  if (fullBtn) {
+    fullBtn.addEventListener('click', () => openEpisodeModal(ep));
+  }
+}
+
+/* ==========================================================================
+   4. Biblioteca: Newsletter Própria + PDF Especial & Enquete Clube do Livro
+   ========================================================================== */
+function initNewsletter() {
+  const form = document.getElementById('newsletter-form');
+  const emailInput = document.getElementById('newsletter-email');
+  const statusEl = document.getElementById('newsletter-status');
+  if (!form || !emailInput || !statusEl) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      statusEl.style.color = 'var(--gold)';
+      statusEl.textContent = '⚠️ Digite um e-mail válido para liberar o Pack em PDF.';
+      return;
+    }
+
+    const leads = JSON.parse(localStorage.getItem('cotoco_newsletter_leads') || '[]');
+    if (!leads.some((l) => l.email === email)) {
+      leads.push({ email, ts: new Date().toISOString() });
+      localStorage.setItem('cotoco_newsletter_leads', JSON.stringify(leads));
+    }
+
+    if (NEWSLETTER_ENDPOINT) {
+      try {
+        await fetch(NEWSLETTER_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ email, source: 'biblioteca_pack_10_aprendizados' })
+        });
+      } catch (_) {}
+    }
+
+    const pdfBlob = generateMestresPdfBlob();
+    triggerDownload(URL.createObjectURL(pdfBlob), 'pack-10-aprendizados-mestres-positivos.pdf');
+    statusEl.style.color = 'var(--emerald)';
+    statusEl.textContent = `✅ E-mail (${email}) registrado! O download do seu Pack em PDF começou agora.`;
+    emailInput.value = '';
+    awardXpPoints(10, 'Pack Mestres Positivos');
+  });
+}
+
+function generateMestresPdfBlob() {
+  const lines = [
+    '@COTOCOPOSITIVO - PACK ESPECIAL DO CLUBE DO LIVRO',
+    'OS 10 MAIORES APRENDIZADOS DOS MESTRES POSITIVOS',
+    '----------------------------------------------------------------',
+    '1. Microacoes de 2 minutos vencem a inercia do cortex pre-frontal.',
+    '2. Mielinizacao: repeticao diaria transforma esforco em piloto automatico.',
+    '3. Sistema 1 vs Sistema 2: use prompts criticos antes de decidir no impulso.',
+    '4. A Unica Coisa: proteja seu primeiro bloco matinal de foco profundo.',
+    '5. Efeito Domino: uma prioridade alinhada simplifica todas as outras.',
+    '6. Higiene da Dopamina: pausas sem telas recalibram seus receptores D2.',
+    '7. Arquitetura de Ambiente: alto atrito para distracao, baixo atrito para habitos.',
+    '8. Ancora Matinal: luz solar natural nos primeiros 15 minutos do dia.',
+    '9. Feedback Limpo: celebre pequenas vitorias para fixar circuitos neurais.',
+    '10. Clareza com IA: use a IA como espelho socratico, nao como ruido.',
+    '----------------------------------------------------------------',
+    'Portal Oficial: https://cotocopositivo.vercel.app'
+  ];
+
+  const sanitizePdfText = (t) => t.replace(/[()\\]/g, '\\$&');
+  let streamContent = 'BT\n/F1 14 Tf\n50 770 Td\n';
+  lines.forEach((line, idx) => {
+    const fontSize = idx === 0 ? 15 : idx === 1 ? 12 : 10;
+    streamContent += `/F1 ${fontSize} Tf\n(${sanitizePdfText(line)}) Tj\n0 -24 Td\n`;
+  });
+  streamContent += 'ET';
+
+  const objects = [
+    '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n',
+    '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n',
+    '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n',
+    `4 0 obj\n<< /Length ${streamContent.length} >>\nstream\n${streamContent}\nendstream\nendobj\n`,
+    '5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n'
+  ];
+
+  let pdf = '%PDF-1.4\n';
+  const offsets = [0];
+  objects.forEach((obj) => {
+    offsets.push(pdf.length);
+    pdf += obj;
+  });
+
+  const xrefPos = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  for (let i = 1; i <= objects.length; i += 1) {
+    pdf += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
+  }
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
+  return new Blob([pdf], { type: 'application/pdf' });
+}
+
+function initBookClubPoll() {
+  const container = document.getElementById('book-club-poll');
+  const totalEl = document.getElementById('poll-total-votes');
+  if (!container) return;
+
+  const POLL_KEY = 'cotoco_book_poll_v1';
+  const USER_VOTE_KEY = 'cotoco_book_user_vote';
+  const books = [
+    { id: 'essencialismo', title: 'Essencialismo', author: 'Greg McKeown', desc: 'A disciplinada busca por menos para fazer apenas o que realmente importa.' },
+    { id: 'meditacoes', title: 'Meditações', author: 'Marco Aurélio', desc: 'Estoicismo prático para manter serenidade, foco e clareza sob pressão.' },
+    { id: 'poder_agora', title: 'O Poder do Agora', author: 'Eckhart Tolle', desc: 'Como silenciar o ruído mental e ancorar sua energia no momento presente.' }
+  ];
+
+  const loadVotes = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(POLL_KEY) || 'null');
+      if (saved && typeof saved === 'object') return saved;
+    } catch (_) {}
+    return { essencialismo: 14, meditacoes: 11, poder_agora: 9 };
+  };
+
+  const render = () => {
+    const votes = loadVotes();
+    const userVote = localStorage.getItem(USER_VOTE_KEY);
+    const total = books.reduce((sum, b) => sum + (votes[b.id] || 0), 0);
+    if (totalEl) totalEl.textContent = `${total} votos`;
+
+    container.innerHTML = books
+      .map((b) => {
+        const count = votes[b.id] || 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        const isVoted = userVote === b.id;
+        return `
+          <div class="poll-option-card ${isVoted ? 'voted' : ''}">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <span class="badge ${isVoted ? 'badge-emerald' : 'badge-gold'}">${pct}%</span>
+                <span style="font-size:0.78rem;color:var(--text-muted);">${count} votos</span>
+              </div>
+              <h3 style="font-size:1.08rem;margin:10px 0 4px;">${escapeHtml(b.title)}</h3>
+              <div style="font-size:0.82rem;color:var(--cyan);font-weight:700;margin-bottom:6px;">${escapeHtml(b.author)}</div>
+              <p style="font-size:0.84rem;color:var(--text-muted);">${escapeHtml(b.desc)}</p>
+            </div>
+            <div>
+              <div class="poll-bar-track" style="margin-bottom:10px;">
+                <div class="poll-bar-fill" style="width:${pct}%;"></div>
+              </div>
+              <button class="btn ${isVoted ? 'btn-emerald' : 'btn-sm'} btn-sm" style="width:100%;" data-poll-vote="${b.id}">
+                ${isVoted ? '✓ Seu Voto Atual' : 'Votar neste Livro'}
+              </button>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+
+    container.querySelectorAll('[data-poll-vote]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const chosen = btn.getAttribute('data-poll-vote');
+        const currentVotes = loadVotes();
+        const prevVote = localStorage.getItem(USER_VOTE_KEY);
+        if (prevVote && prevVote !== chosen && currentVotes[prevVote] > 0) {
+          currentVotes[prevVote] -= 1;
+        }
+        if (prevVote !== chosen) {
+          currentVotes[chosen] = (currentVotes[chosen] || 0) + 1;
+          localStorage.setItem(POLL_KEY, JSON.stringify(currentVotes));
+          localStorage.setItem(USER_VOTE_KEY, chosen);
+          showCotocoToast('🗳️ Voto registrado no Clube do Livro!');
+        }
+        render();
+      });
+    });
+  };
+
+  render();
 }

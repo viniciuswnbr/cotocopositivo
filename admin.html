@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Admin 80/20 — @cotocopositivo</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0A0E17">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="index.html" class="logo">
+      <span class="logo-accent">@cotocopositivo</span>
+      <span class="logo-tag">ADMIN 80/20</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html">Início</a>
+      <a href="biblioteca.html" class="nav-gold">Biblioteca</a>
+      <a href="links.html">Links</a>
+      <a href="admin.html" class="active">Admin 80/20</a>
+    </div>
+  </nav>
+
+  <!-- MODAL / TELA DE SENHA SIMPLES -->
+  <div class="modal-backdrop open" id="admin-auth-modal" role="dialog" aria-modal="true" aria-label="Acesso Restrito Admin">
+    <div class="modal-panel" style="max-width: 420px; text-align: center;">
+      <svg style="width:72px;height:72px;margin:0 auto 10px;display:block;" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="60" y="54" width="100" height="72" rx="26" fill="#152036" stroke="#00F0FF" stroke-width="4"/>
+        <rect x="70" y="64" width="80" height="50" rx="16" fill="#0A0E17" stroke="#00F0FF" stroke-width="2"/>
+        <ellipse cx="90" cy="86" rx="8" ry="10" fill="#00F0FF"/>
+        <ellipse cx="130" cy="86" rx="8" ry="10" fill="#00F0FF"/>
+        <path d="M98 99Q110 108 122 99" stroke="#10B981" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+      <span class="badge badge-gold">🔐 PAINEL DE DECISÃO MENSAL 80/20</span>
+      <h1 style="font-size: 1.3rem; margin: 10px 0 6px;">Acesso Administrativo</h1>
+      <p class="section-subtitle" style="margin-bottom: 16px;">Digite a senha de operador para visualizar métricas e gerar a fila editorial.</p>
+      <form id="admin-login-form" style="display:flex;flex-direction:column;gap:10px;">
+        <input type="password" id="admin-password-input" class="input-neon" placeholder="Senha do painel..." required autofocus>
+        <button type="submit" class="btn">🔓 Desbloquear Painel</button>
+      </form>
+      <p id="admin-auth-error" style="color:#FCA5A5;font-size:0.84rem;margin-top:10px;min-height:18px;"></p>
+    </div>
+  </div>
+
+  <main class="container" id="admin-dashboard" style="display: none;">
+    <section class="glass-card" style="margin-bottom: 24px;">
+      <div class="section-header" style="margin-bottom: 10px;">
+        <div>
+          <span class="badge badge-emerald">📊 DECISÃO ESTRATÉGICA 80/20</span>
+          <h1 class="section-title">Painel Mensal @cotocopositivo</h1>
+          <p class="section-subtitle">Monitore os temas campeões, origem do tráfego e exporte a fila do <code>ia-explica-bot</code>.</p>
+        </div>
+        <div class="card-actions-row">
+          <button class="btn btn-sm" id="admin-seed-btn">✨ Simular Dados Demo</button>
+          <button class="btn btn-gold btn-sm" id="admin-export-log-btn">⬇️ Exportar Log (.json)</button>
+          <button class="btn btn-ghost btn-sm" id="admin-logout-btn">🔒 Bloquear</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-bottom: 24px;">
+      <!-- 1. RANKING DE CLIQUES POR EPISÓDIO E LIVROS -->
+      <div class="glass-card">
+        <span class="badge badge-gold">1. RANKING DE CLIQUES (EPISÓDIOS)</span>
+        <h2 style="font-size: 1.15rem; margin: 10px 0 12px;">Episódios Mais Acessados</h2>
+        <div id="admin-episodes-ranking" style="display:flex;flex-direction:column;gap:10px;"></div>
+
+        <h3 style="font-size: 1.02rem; margin: 20px 0 10px; color: var(--gold);">📚 Cliques em Livros</h3>
+        <div id="admin-books-ranking" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
+      <!-- 2. ORIGEM DO TRÁFEGO (UTM / DEEP LINKS) -->
+      <div class="glass-card">
+        <span class="badge">2. ORIGEM DO TRÁFEGO (UTM)</span>
+        <h2 style="font-size: 1.15rem; margin: 10px 0 6px;">Rotas Curtas & Redes Sociais</h2>
+        <p class="section-subtitle" style="font-size:0.82rem;margin-bottom:12px;">
+          Contabilizado via <code>/yt</code>, <code>/ig</code>, <code>/fb</code>, <code>/podcast-ia</code>, <code>/podcast-reflexoes</code>.
+        </p>
+        <div id="admin-utm-ranking" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+    </section>
+
+    <!-- 3. GERADOR DE FILA EDITORIAL (editorial_queue.json) -->
+    <section class="glass-card" style="border-color: rgba(16, 185, 129, 0.4);">
+      <div class="section-header" style="margin-bottom: 12px;">
+        <div>
+          <span class="badge badge-emerald">3. GERADOR DE FILA EDITORIAL</span>
+          <h2 class="section-title">Exportar <code>editorial_queue.json</code> (ia-explica-bot)</h2>
+          <p class="section-subtitle">Selecione os temas campeões abaixo ou adicione um novo tema prioritário para gerar o JSON pronto.</p>
+        </div>
+      </div>
+
+      <div id="admin-themes-selector" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;"></div>
+
+      <div class="oracle-row" style="margin-bottom: 14px;">
+        <input type="text" id="admin-custom-topic" class="input-neon" placeholder="Adicionar novo tema campeão (ex: Regulação Emocional com IA)...">
+        <input type="text" id="admin-custom-book" class="input-neon" placeholder="Livro de apoio opcional (ex: Inteligência Emocional)...">
+        <button class="btn btn-emerald" id="admin-add-topic-btn">+ Adicionar à Fila</button>
+      </div>
+
+      <textarea id="admin-queue-output" class="admin-code-box" readonly aria-label="JSON gerado para editorial_queue.json"></textarea>
+
+      <div class="card-actions-row" style="margin-top: 12px;">
+        <button class="btn btn-gold" id="admin-copy-queue-btn">📋 Copiar editorial_queue.json (1 Clique)</button>
+        <button class="btn btn-ghost" id="admin-download-queue-btn">⬇️ Baixar editorial_queue.json</button>
+        <span id="admin-copy-status" style="font-size:0.86rem;color:var(--emerald);font-weight:700;"></span>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    (function initAdminPanel() {
+      const ADMIN_PASS = 'cotoco8020';
+      const SESSION_KEY = 'cotoco_admin_session';
+
+      const modal = document.getElementById('admin-auth-modal');
+      const dash = document.getElementById('admin-dashboard');
+      const form = document.getElementById('admin-login-form');
+      const passInput = document.getElementById('admin-password-input');
+      const errEl = document.getElementById('admin-auth-error');
+
+      const unlock = () => {
+        modal.classList.remove('open');
+        dash.style.display = 'block';
+        renderAdminData();
+      };
+
+      if (localStorage.getItem(SESSION_KEY) === '1') {
+        unlock();
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (passInput.value === ADMIN_PASS) {
+          localStorage.setItem(SESSION_KEY, '1');
+          errEl.textContent = '';
+          unlock();
+        } else {
+          errEl.textContent = 'Senha incorreta. Tente novamente.';
+        }
+      });
+
+      document.getElementById('admin-logout-btn').addEventListener('click', () => {
+        localStorage.removeItem(SESSION_KEY);
+        dash.style.display = 'none';
+        passInput.value = '';
+        modal.classList.add('open');
+      });
+
+      document.getElementById('admin-seed-btn').addEventListener('click', () => {
+        window.CotocoAnalytics.seedDemo();
+        renderAdminData();
+      });
+
+      document.getElementById('admin-export-log-btn').addEventListener('click', () => {
+        window.CotocoAnalytics.exportLog();
+      });
+
+      const customQueueItems = [];
+      let loadedEpisodes = [];
+
+      async function renderAdminData() {
+        const store = window.CotocoAnalytics.get();
+        renderEpisodesRanking(store.episodeClicks);
+        renderBooksRanking(store.bookClicks);
+        renderUtmRanking(store.utmSources);
+
+        if (loadedEpisodes.length === 0) {
+          try {
+            const res = await fetch('public/data/ia-explica/index.json');
+            if (res.ok) {
+              const data = await res.json();
+              loadedEpisodes = Array.isArray(data.episodios) ? data.episodios : [];
+            }
+          } catch (_) {}
+        }
+        renderThemeSelector(store);
+        rebuildQueueJson();
+      }
+
+      function renderEpisodesRanking(epClicks) {
+        const el = document.getElementById('admin-episodes-ranking');
+        const list = Object.values(epClicks || {}).sort((a, b) => b.clicks - a.clicks);
+        if (list.length === 0) {
+          el.innerHTML = '<p class="section-subtitle" style="font-size:0.86rem;">Nenhum clique em episódio registrado ainda. Clique em "Simular Dados Demo" para testar.</p>';
+          return;
+        }
+        const max = Math.max(1, list[0].clicks);
+        el.innerHTML = list.slice(0, 6).map((item, idx) => `
+          <div class="admin-bar-row">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:0.86rem;font-weight:700;">
+              <span>#${idx + 1} • EP ${String(item.numero).padStart(3, '0')} (${item.tema})</span>
+              <span style="color:var(--gold);">${item.clicks} cliques</span>
+            </div>
+            <div style="font-size:0.8rem;color:var(--text-muted);">${item.titulo}</div>
+            <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${Math.round((item.clicks / max) * 100)}%;"></div></div>
+          </div>
+        `).join('');
+      }
+
+      function renderBooksRanking(bookClicks) {
+        const el = document.getElementById('admin-books-ranking');
+        const list = Object.values(bookClicks || {}).sort((a, b) => b.clicks - a.clicks);
+        if (list.length === 0) {
+          el.innerHTML = '<p class="section-subtitle" style="font-size:0.86rem;">Nenhum clique em livro registrado ainda.</p>';
+          return;
+        }
+        const max = Math.max(1, list[0].clicks);
+        el.innerHTML = list.slice(0, 5).map((item) => `
+          <div class="admin-bar-row">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:0.84rem;font-weight:700;">
+              <span>📖 ${item.titulo}</span>
+              <span style="color:var(--cyan);">${item.clicks} cliques</span>
+            </div>
+            <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${Math.round((item.clicks / max) * 100)}%;background:linear-gradient(90deg,var(--gold),var(--emerald));"></div></div>
+          </div>
+        `).join('');
+      }
+
+      function renderUtmRanking(utmSources) {
+        const el = document.getElementById('admin-utm-ranking');
+        const channels = [
+          { key: 'youtube', label: '▶ YouTube (/yt)' },
+          { key: 'instagram', label: '📸 Instagram (/ig)' },
+          { key: 'facebook', label: '📘 Facebook (/fb)' },
+          { key: 'spotify_ia', label: '🎧 Spotify IA Explica (/podcast-ia)' },
+          { key: 'spotify_reflexoes', label: '🌙 Spotify Reflexões (/podcast-reflexoes)' }
+        ];
+        const total = channels.reduce((s, c) => s + (utmSources[c.key] || 0), 0);
+        el.innerHTML = channels.map((c) => {
+          const val = utmSources[c.key] || 0;
+          const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+          return `
+            <div class="admin-bar-row">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:0.85rem;font-weight:700;">
+                <span>${c.label}</span>
+                <span style="color:var(--emerald);">${val} (${pct}%)</span>
+              </div>
+              <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${pct}%;"></div></div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderThemeSelector(store) {
+        const container = document.getElementById('admin-themes-selector');
+        const themes = new Set(['Neurociência', 'IA & Produtividade', 'Hábitos & Foco', 'Bem-Estar Digital']);
+        loadedEpisodes.forEach((ep) => { if (ep.tema) themes.add(ep.tema); });
+        Object.values(store.episodeClicks || {}).forEach((e) => { if (e.tema) themes.add(e.tema); });
+
+        container.innerHTML = Array.from(themes).map((t) => `
+          <label class="filter-chip active" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" class="admin-theme-cb" value="${t}" checked>
+            <span>${t}</span>
+          </label>
+        `).join('');
+
+        container.querySelectorAll('.admin-theme-cb').forEach((cb) => {
+          cb.addEventListener('change', () => {
+            cb.closest('label').classList.toggle('active', cb.checked);
+            rebuildQueueJson();
+          });
+        });
+      }
+
+      function rebuildQueueJson() {
+        const checkedThemes = Array.from(document.querySelectorAll('.admin-theme-cb:checked')).map((c) => c.value);
+        const queue = [];
+
+        checkedThemes.forEach((tema, idx) => {
+          const refEp = loadedEpisodes.find((e) => e.tema === tema);
+          queue.push({
+            id: `fila_${idx + 1}`,
+            tema,
+            titulo_sugerido: `Aprofundamento 80/20 em ${tema}: Protocolo Prático @cotocopositivo`,
+            prioridade: idx < 2 ? 'alta' : 'media',
+            livro_referencia: refEp && refEp.livro_apoio ? refEp.livro_apoio.titulo : 'Curadoria Oficial',
+            status: 'pendente'
+          });
+        });
+
+        customQueueItems.forEach((item, idx) => {
+          queue.unshift({
+            id: `custom_${idx + 1}`,
+            tema: 'Tema Campeão Personalizado',
+            titulo_sugerido: item.topic,
+            prioridade: 'alta',
+            livro_referencia: item.book || 'A definir',
+            status: 'pendente'
+          });
+        });
+
+        const payload = {
+          gerado_em: new Date().toISOString(),
+          ecossistema: '@cotocopositivo',
+          origem_decisao: 'painel_admin_80_20',
+          fila_editorial: queue
+        };
+        document.getElementById('admin-queue-output').value = JSON.stringify(payload, null, 2);
+      }
+
+      document.getElementById('admin-add-topic-btn').addEventListener('click', () => {
+        const topicEl = document.getElementById('admin-custom-topic');
+        const bookEl = document.getElementById('admin-custom-book');
+        const topic = topicEl.value.trim();
+        if (!topic) return;
+        customQueueItems.push({ topic, book: bookEl.value.trim() });
+        topicEl.value = '';
+        bookEl.value = '';
+        rebuildQueueJson();
+      });
+
+      document.getElementById('admin-copy-queue-btn').addEventListener('click', async () => {
+        const text = document.getElementById('admin-queue-output').value;
+        const statusEl = document.getElementById('admin-copy-status');
+        try {
+          await navigator.clipboard.writeText(text);
+          statusEl.textContent = '✅ Bloco JSON copiado! Cole diretamente no editorial_queue.json do ia-explica-bot.';
+        } catch (_) {
+          statusEl.textContent = '⚠️ Copie manualmente o texto acima.';
+        }
+      });
+
+      document.getElementById('admin-download-queue-btn').addEventListener('click', () => {
+        const text = document.getElementById('admin-queue-output').value;
+        const blob = new Blob([text], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'editorial_queue.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+    })();
+  </script>
+</body>
+</html>
