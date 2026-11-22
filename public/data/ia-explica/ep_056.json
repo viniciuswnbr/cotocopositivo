@@ -1,0 +1,52 @@
+{
+  "numero": 56,
+  "titulo": "Como a Neuroplasticidade e a IA Reprogramam Hábitos em 21 Dias",
+  "tema": "Neurociência",
+  "estilo_visual": "Neon Ciano & Ouro",
+  "youtube_video_id": "dQw4w9WgXcQ",
+  "data": "2026-11-20",
+  "duracao": "08:42",
+  "niveis": {
+    "iniciante": {
+      "titulo": "Nível 1 • Iniciante (A Metáfora da Trilha)",
+      "texto": "Imagine que seu cérebro é uma grande floresta. Cada pensamento ou hábito que você repete abre uma trilha no mato. No começo dá trabalho, mas depois de alguns dias passando pelo mesmo caminho, a trilha vira uma estrada asfaltada. A boa notícia é que você pode usar pequenos lembretes e a ajuda da Inteligência Artificial para escolher quais estradas quer construir hoje."
+    },
+    "sabio": {
+      "titulo": "Nível 2 • Sábio (Mielinização e Custo Energético)",
+      "texto": "Do ponto de vista neurobiológico, repetir uma microação positiva estimula a produção de mielina ao redor dos axônios envolvidos naquele circuito. Isso aumenta a velocidade de condução sináptica e reduz o consumo de glicose no córtex pré-frontal. Quando combinamos gatilhos ambientais claros com feedback imediato — como os mini-desafios do Cotoco Positivo — reduzimos a dependência da força de vontade."
+    },
+    "mestre_positivo": {
+      "titulo": "Nível 3 • Mestre Positivo (Protocolo Neuro-Algorítmico)",
+      "texto": "Para dominar a reprogramação de hábitos, execute o ciclo em 3 etapas: (1) Âncora Matinal sem telas nos primeiros 15 minutos; (2) Microação de 120 segundos conectada a um hábito já existente; (3) Celebração consciente para liberar dopamina endógena limpa. Use a IA como copiloto reflexivo ao final do dia para registrar vitórias e ajustar o próximo passo."
+    }
+  },
+  "livro_apoio": {
+    "titulo": "Hábitos Atômicos",
+    "autor": "James Clear",
+    "motivo": "O guia definitivo sobre como pequenas mudanças de 1% ao dia geram resultados extraordinários por meio de sistemas sustentáveis.",
+    "plataforma": "Amazon",
+    "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear"
+  },
+  "roteiro_teleprompter": [
+    {
+      "bloco": "ABERTURA (GANCHO)",
+      "fala": "Olá, mente brilhante! Você já tentou mudar um hábito na segunda-feira e sentiu que na quarta-feira a bateria acabou? Hoje o IA Explica vai mostrar por que isso não é falta de disciplina — é apenas engenharia neural mal configurada."
+    },
+    {
+      "bloco": "NÍVEL INICIANTE",
+      "fala": "No nível Iniciante, pense no seu cérebro como uma floresta. Toda vez que você repete uma ação — seja checar o celular ansioso ou respirar fundo por um minuto — você está pisando na mesma trilha. Quanto mais você passa por ela, mais fácil o caminho fica."
+    },
+    {
+      "bloco": "NÍVEL SÁBIO",
+      "fala": "Subindo para o nível Sábio: a ciência chama isso de mielinização. Quando você pratica uma microação diária, seu cérebro reveste os neurônios com mielina, fazendo o sinal viajar mais rápido e gastando menos energia do córtex pré-frontal. É por isso que hábitos consolidados acontecem no automático."
+    },
+    {
+      "bloco": "NÍVEL MESTRE POSITIVO",
+      "fala": "E no nível Mestre Positivo, nós unimos neurociência com inteligência artificial: crie um gatilho claro pela manhã, execute uma microação de apenas dois minutos e celebre o avanço imediatamente. Use o Oráculo do Cotoco Positivo no nosso portal para calibrar seu foco todos os dias."
+    },
+    {
+      "bloco": "LIVRO RECOMENDADO & ENCERRAMENTO",
+      "fala": "Para aprofundar esse método, o livro recomendado de hoje é Hábitos Atômicos, de James Clear — o link oficial está logo aqui na vitrine do portal. Se este episódio trouxe clareza para o seu dia, inscreva-se no canal @cotocopositivo e até o próximo IA Explica!"
+    }
+  ]
+}

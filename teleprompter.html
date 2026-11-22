@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teleprompter IA Explica — @cotocopositivo</title>
+  <meta name="theme-color" content="#0A0E17">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tp-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .tp-control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tp-select {
+      background: #0A0E17;
+      color: var(--text-main);
+      border: 1px solid var(--border-glass);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.9rem;
+      max-width: 340px;
+    }
+    .tp-stage {
+      background: #05080F;
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius-lg);
+      height: 62vh;
+      overflow-y: auto;
+      padding: 40px 28px 180px;
+      box-shadow: 0 0 32px rgba(0, 240, 255, 0.14);
+      position: relative;
+      scroll-behavior: auto;
+    }
+    .tp-stage.mirrored {
+      transform: scaleX(-1);
+    }
+    .tp-block {
+      margin-bottom: 28px;
+    }
+    .tp-block-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .tp-text {
+      font-size: 2rem;
+      line-height: 1.45;
+      font-weight: 600;
+      color: #F8FAFC;
+    }
+    .tp-guide-line {
+      position: sticky;
+      top: 30%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.45), transparent);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="index.html" class="logo">
+      <span class="logo-accent">@cotocopositivo</span>
+      <span class="logo-tag">TELEPROMPTER</span>
+    </a>
+    <div class="nav-links" style="display:flex;">
+      <a href="index.html">← Voltar ao Portal</a>
+      <a href="jogos.html">Ferramentas</a>
+      <a href="ebook.html" class="nav-emerald">Produtos & Livros</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="glass-card" style="margin-bottom: 20px;">
+      <div class="tp-controls">
+        <div class="tp-control-group">
+          <span class="badge badge-gold">🎙️ CONECTADO AO EPISÓDIO MAIS RECENTE</span>
+          <select id="tp-episode-select" class="tp-select" aria-label="Selecionar episódio"></select>
+        </div>
+        <div class="tp-control-group">
+          <button class="btn btn-emerald btn-sm" id="tp-play-btn">▶ Iniciar Rolagem</button>
+          <button class="btn btn-ghost btn-sm" id="tp-reset-btn">↺ Topo</button>
+          <button class="btn btn-ghost btn-sm" id="tp-mirror-btn">🪞 Espelhar</button>
+        </div>
+      </div>
+
+      <div class="tp-controls" style="margin-bottom: 0; font-size: 0.85rem; color: var(--text-muted);">
+        <label>Velocidade: <strong id="tp-speed-val" style="color:var(--cyan);">2</strong>
+          <input type="range" id="tp-speed" min="1" max="8" value="2" style="vertical-align: middle;">
+        </label>
+        <label>Tamanho da Fonte: <strong id="tp-size-val" style="color:var(--gold);">32px</strong>
+          <input type="range" id="tp-size" min="20" max="54" value="32" style="vertical-align: middle;">
+        </label>
+        <span id="tp-ep-meta"></span>
+      </div>
+    </section>
+
+    <section id="tp-stage" class="tp-stage" aria-label="Área de leitura do Teleprompter">
+      <div class="tp-guide-line"></div>
+      <div id="tp-content">
+        <p class="tp-text">Carregando roteiro mais recente...</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const INDEX_PATH = 'public/data/ia-explica/index.json';
+    const DATA_PATH = 'public/data/ia-explica/';
+
+    let episodes = [];
+    let scrolling = false;
+    let rafId = null;
+    let speed = 2;
+
+    const selectEl = document.getElementById('tp-episode-select');
+    const stageEl = document.getElementById('tp-stage');
+    const contentEl = document.getElementById('tp-content');
+    const playBtn = document.getElementById('tp-play-btn');
+    const resetBtn = document.getElementById('tp-reset-btn');
+    const mirrorBtn = document.getElementById('tp-mirror-btn');
+    const speedInput = document.getElementById('tp-speed');
+    const sizeInput = document.getElementById('tp-size');
+    const metaEl = document.getElementById('tp-ep-meta');
+
+    async function initTeleprompter() {
+      try {
+        const res = await fetch(INDEX_PATH);
+        if (!res.ok) throw new Error('Falha ao carregar index.json');
+        const data = await res.json();
+        episodes = data.episodios || [];
+        if (episodes.length === 0) return;
+
+        selectEl.innerHTML = episodes
+          .map((ep) => `<option value="${ep.numero}">EP #${String(ep.numero).padStart(3, '0')} — ${ep.titulo}</option>`)
+          .join('');
+
+        const params = new URLSearchParams(window.location.search);
+        const requestedEp = Number(params.get('ep'));
+        const target = episodes.find((e) => e.numero === requestedEp) || episodes[0];
+        selectEl.value = String(target.numero);
+        await loadEpisodeScript(target);
+      } catch (err) {
+        contentEl.innerHTML = `<p class="tp-text" style="font-size:1.2rem; color:var(--gold);">Erro ao carregar roteiro via fetch. Abra via servidor HTTP ou na Vercel.</p>`;
+      }
+    }
+
+    async function loadEpisodeScript(ep) {
+      metaEl.textContent = `${ep.tema} • ${ep.estilo_visual}`;
+      let detail = null;
+      if (ep.arquivo) {
+        try {
+          const r = await fetch(`${DATA_PATH}${ep.arquivo}`);
+          if (r.ok) detail = await r.json();
+        } catch (_) {}
+      }
+
+      let blocks = [];
+      if (detail && Array.isArray(detail.roteiro_teleprompter)) {
+        blocks = detail.roteiro_teleprompter;
+      } else {
+        const n = ep.niveis || {};
+        blocks = [
+          { bloco: 'ABERTURA', fala: `${ep.titulo}. ${ep.resumo || ''}` },
+          { bloco: 'NÍVEL INICIANTE', fala: n.iniciante || '' },
+          { bloco: 'NÍVEL SÁBIO', fala: n.sabio || '' },
+          { bloco: 'NÍVEL MESTRE POSITIVO', fala: n.mestre_positivo || '' }
+        ];
+      }
+
+      contentEl.innerHTML = blocks
+        .map(
+          (b) => `
+          <div class="tp-block">
+            <span class="tp-block-tag">${b.bloco}</span>
+            <p class="tp-text">${b.fala}</p>
+          </div>`
+        )
+        .join('');
+      applyFontSize(sizeInput.value);
+      stageEl.scrollTop = 0;
+    }
+
+    function tickScroll() {
+      if (!scrolling) return;
+      stageEl.scrollTop += speed * 0.45;
+      rafId = requestAnimationFrame(tickScroll);
+    }
+
+    function applyFontSize(px) {
+      document.getElementById('tp-size-val').textContent = `${px}px`;
+      contentEl.querySelectorAll('.tp-text').forEach((p) => {
+        p.style.fontSize = `${px}px`;
+      });
+    }
+
+    playBtn.addEventListener('click', () => {
+      scrolling = !scrolling;
+      playBtn.textContent = scrolling ? '⏸ Pausar' : '▶ Iniciar Rolagem';
+      if (scrolling) tickScroll();
+      else if (rafId) cancelAnimationFrame(rafId);
+    });
+
+    resetBtn.addEventListener('click', () => {
+      scrolling = false;
+      playBtn.textContent = '▶ Iniciar Rolagem';
+      stageEl.scrollTop = 0;
+    });
+
+    mirrorBtn.addEventListener('click', () => {
+      stageEl.classList.toggle('mirrored');
+    });
+
+    speedInput.addEventListener('input', (e) => {
+      speed = Number(e.target.value);
+      document.getElementById('tp-speed-val').textContent = String(speed);
+    });
+
+    sizeInput.addEventListener('input', (e) => applyFontSize(e.target.value));
+
+    selectEl.addEventListener('change', async (e) => {
+      const ep = episodes.find((item) => item.numero === Number(e.target.value));
+      if (ep) await loadEpisodeScript(ep);
+    });
+
+    initTeleprompter();
+  </script>
+</body>
+</html>

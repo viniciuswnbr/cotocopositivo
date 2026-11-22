@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catcher de Boas Energias - Cotoco Positivo</title>
+  <style>
+    :root {
+      --brand: #6C5CE7;
+      --brand-hover: #5644d6;
+      --accent: #00B894;
+      --bg: #FDFBF7;
+      --card-bg: #FFFFFF;
+      --text: #2D3436;
+      --text-muted: #636E72;
+      --border: #E2E8F0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-bar {
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--brand);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--brand); }
+    .nav-links a.highlight-link { color: var(--accent); }
+    .nav-links a.yt-link {
+      background: #FF0000;
+      color: #FFF;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+      width: 100%;
+      flex: 1;
+    }
+    .game-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .btn {
+      background: var(--brand);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-block;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover { background: var(--brand-hover); }
+    .btn:active { transform: scale(0.98); }
+    .footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 40px;
+    }
+    .footer a { color: var(--brand); text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="logo">🌿 Cotoco Positivo</a>
+    <div class="nav-links">
+      <a href="../index.html">Inicio</a>
+      <a href="../jogos.html">Jogos</a>
+      <a href="../ebook.html" class="highlight-link">Guia Pratico</a>
+      <a href="https://www.youtube.com/@cotocopositivo?sub_confirmation=1" target="_blank" class="yt-link">Canal YouTube</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="game-card">
+      <h1 style="color: var(--brand); margin-bottom: 8px;">🧺 Pegue as Boas Energias</h1>
+      <p style="color: var(--text-muted); margin-bottom: 16px;">Mova a cesta para capturar 5 estrelas cadentes de positividade!</p>
+      
+      <div style="font-weight:700; color:var(--accent); margin-bottom:12px;">Estrelas Capturadas: <span id="catch-score">0</span> / 5</div>
+      <div id="catch-box" style="position:relative; width:100%; height:300px; background:#F8FAFC; border:2px dashed #CBD5E1; border-radius:12px; overflow:hidden;">
+        <div id="basket" style="position:absolute; bottom:10px; left:45%; font-size:36px; user-select:none; cursor:pointer;">🧺</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../cotoco-share.js"></script>
+  <script>
+    let caught = 0;
+    const box = document.getElementById('catch-box');
+    const basket = document.getElementById('basket');
+    const scoreEl = document.getElementById('catch-score');
+
+    box.addEventListener('mousemove', (e) => {
+      const rect = box.getBoundingClientRect();
+      const x = e.clientX - rect.left - 20;
+      basket.style.left = `${Math.max(0, Math.min(x, rect.width - 40))}px`;
+    });
+
+    function dropStar() {
+      if (caught >= 5) return;
+      const star = document.createElement('div');
+      star.textContent = "⭐";
+      star.style.cssText = `position:absolute; top:0; left:${Math.random() * 85}%; font-size:26px; user-select:none;`;
+      box.appendChild(star);
+
+      let top = 0;
+      const timer = setInterval(() => {
+        top += 4;
+        star.style.top = top + 'px';
+
+        const starRect = star.getBoundingClientRect();
+        const basketRect = basket.getBoundingClientRect();
+
+        if (
+          starRect.bottom >= basketRect.top &&
+          starRect.right >= basketRect.left &&
+          starRect.left <= basketRect.right
+        ) {
+          clearInterval(timer);
+          star.remove();
+          caught++;
+          scoreEl.textContent = caught;
+
+          if (caught === 5) {
+            CotocoShare.show({
+              gameTitle: "Catcher Positivo",
+              message: "Coletei todas as energias boas com foco e agilidade!",
+              customWppText: "Venci o jogo Catcher de Boas Energias no Cotoco Positivo! 🌿 Venha conferir: " + CotocoShare.config.channelUrl
+            });
+          }
+        } else if (top > 270) {
+          clearInterval(timer);
+          star.remove();
+        }
+      }, 30);
+    }
+
+    const starInterval = setInterval(() => {
+      if (caught >= 5) { clearInterval(starInterval); return; }
+      dropStar();
+    }, 1200);
+  </script>
+
+  <footer class="footer">
+    <p>🌿 <strong>Cotoco Positivo</strong> • Cultivando habitos, clareza e bem-estar diario.</p>
+    <p style="margin-top: 8px;">
+      <a href="https://www.youtube.com/@cotocopositivo?sub_confirmation=1" target="_blank">YouTube</a> |
+      <a href="https://instagram.com/cotocopositivo" target="_blank">Instagram</a> |
+      <a href="https://www.tiktok.com/@cotocopositivo" target="_blank">TikTok</a> |
+      <a href="https://www.facebook.com/profile.php?id=61592308025021" target="_blank">Facebook</a> |
+      <a href="https://substack.com/@cotocopositivo" target="_blank">Substack</a> |
+      <a href="../ebook.html">E-book Oficial</a>
+    </p>
+  </footer>
+</body></html>

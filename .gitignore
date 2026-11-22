@@ -1,0 +1,18 @@
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Vercel & Deploy
+.vercel
+.env
+.env.*
+
+# Dependências e Logs
+node_modules/
+npm-debug.log*
+*.log
+
+# IDEs
+.vscode/
+.idea/

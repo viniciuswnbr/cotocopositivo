@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz de Positividade - Cotoco Positivo</title>
+  <style>
+    :root {
+      --brand: #6C5CE7;
+      --brand-hover: #5644d6;
+      --accent: #00B894;
+      --bg: #FDFBF7;
+      --card-bg: #FFFFFF;
+      --text: #2D3436;
+      --text-muted: #636E72;
+      --border: #E2E8F0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-bar {
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--brand);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--brand); }
+    .nav-links a.highlight-link { color: var(--accent); }
+    .nav-links a.yt-link {
+      background: #FF0000;
+      color: #FFF;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+      width: 100%;
+      flex: 1;
+    }
+    .game-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .btn {
+      background: var(--brand);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-block;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover { background: var(--brand-hover); }
+    .btn:active { transform: scale(0.98); }
+    .footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 40px;
+    }
+    .footer a { color: var(--brand); text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="logo">🌿 Cotoco Positivo</a>
+    <div class="nav-links">
+      <a href="../index.html">Inicio</a>
+      <a href="../jogos.html">Jogos</a>
+      <a href="../ebook.html" class="highlight-link">Guia Pratico</a>
+      <a href="https://www.youtube.com/@cotocopositivo?sub_confirmation=1" target="_blank" class="yt-link">Canal YouTube</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="game-card">
+      <h1 style="color: var(--brand); margin-bottom: 8px;">💡 Quiz de Positividade</h1>
+      <p style="color: var(--text-muted); margin-bottom: 24px;">Responda a situacoes do cotidiano com foco em clareza e autorregulacao.</p>
+      
+      <div id="quiz-box" style="text-align: left; max-width: 550px; margin: 0 auto;">
+        <h3 id="question-text" style="font-size: 18px; margin-bottom: 16px; color: var(--text);">Pergunta</h3>
+        <div id="answers-box" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+      <div id="quiz-step" style="margin-top:20px; font-size:14px; color:var(--text-muted);">Questao 1 de 3</div>
+    </div>
+  </div>
+
+  <script src="../cotoco-share.js"></script>
+  <script>
+    const questions = [
+      {
+        q: "Quando um plano nao da certo logo pela manha, qual e a resposta mais equilibrada?",
+        options: [
+          { text: "Respirar fundo, aceitar o imprevisto e ajustar a rota com calma.", correct: true },
+          { text: "Reclamar mentalmente e se fechar para o restante do dia.", correct: false }
+        ]
+      },
+      {
+        q: "Qual e o melhor antídoto para a ansiedade no meio de uma tarefa complexa?",
+        options: [
+          { text: "Focar estritamente na proxima microacao imediata.", correct: true },
+          { text: "Tentar resolver todos os problemas futuros ao mesmo tempo.", correct: false }
+        ]
+      },
+      {
+        q: "Como encerrar a noite para favorecer a recuperacao mental?",
+        options: [
+          { text: "Desconectar das telas e listar 3 pequenas conquistas do dia.", correct: true },
+          { text: "Ficar no feed de redes sociais ate pegar no sono exausto.", correct: false }
+        ]
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function renderQuestion() {
+      const item = questions[current];
+      document.getElementById('question-text').textContent = item.q;
+      document.getElementById('quiz-step').textContent = `Questao ${current + 1} de ${questions.length}`;
+      const box = document.getElementById('answers-box');
+      box.innerHTML = '';
+
+      item.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt.text;
+        btn.className = "btn";
+        btn.style.cssText = "background:#F8FAFC; color:#1E293B; border:2px solid #E2E8F0; text-align:left; font-size:15px; padding:12px 16px;";
+        btn.onclick = () => {
+          if (opt.correct) score++;
+          current++;
+          if (current < questions.length) {
+            renderQuestion();
+          } else {
+            CotocoShare.show({
+              gameTitle: "Quiz de Positividade",
+              message: `Acertei ${score} de ${questions.length} reflexoes de autogestao emocional!`,
+              customWppText: `Fiz o Quiz de Positividade do Cotoco Positivo e pontuei ${score}/${questions.length}! 🌿 Descubra seu resultado: ${CotocoShare.config.channelUrl}`
+            });
+          }
+        };
+        box.appendChild(btn);
+      });
+    }
+
+    renderQuestion();
+  </script>
+
+  <footer class="footer">
+    <p>🌿 <strong>Cotoco Positivo</strong> • Cultivando habitos, clareza e bem-estar diario.</p>
+    <p style="margin-top: 8px;">
+      <a href="https://www.youtube.com/@cotocopositivo?sub_confirmation=1" target="_blank">YouTube</a> |
+      <a href="https://instagram.com/cotocopositivo" target="_blank">Instagram</a> |
+      <a href="https://www.tiktok.com/@cotocopositivo" target="_blank">TikTok</a> |
+      <a href="https://www.facebook.com/profile.php?id=61592308025021" target="_blank">Facebook</a> |
+      <a href="https://substack.com/@cotocopositivo" target="_blank">Substack</a> |
+      <a href="../ebook.html">E-book Oficial</a>
+    </p>
+  </footer>
+</body></html>

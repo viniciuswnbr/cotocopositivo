@@ -1,0 +1,95 @@
+{
+  "programa": "IA Explica",
+  "ecossistema": "@cotocopositivo",
+  "atualizado_em": "2026-11-21",
+  "episodios": [
+    {
+      "numero": 56,
+      "titulo": "Como a Neuroplasticidade e a IA Reprogramam Hábitos em 21 Dias",
+      "tema": "Neurociência",
+      "estilo_visual": "Neon Ciano & Ouro",
+      "youtube_video_id": "dQw4w9WgXcQ",
+      "data": "2026-11-20",
+      "duracao": "08:42",
+      "arquivo": "ep_056.json",
+      "resumo": "Entenda como o cérebro cria novas rotas neurais com microações diárias e como prompts de IA podem atuar como âncoras cognitivas.",
+      "niveis": {
+        "iniciante": "Seu cérebro funciona como uma trilha na floresta: quanto mais você passa por um hábito positivo, mais fácil fica o caminho.",
+        "sabio": "A mielinização de circuitos pré-frontais reduz o gasto energético da força de vontade quando associamos gatilhos visuais a micro-recompensas.",
+        "mestre_positivo": "Integre o Loop Neuro-Algorítmico: gatilho ambiental claro + microação de 2 minutos + registro imediato de dopamina limpa."
+      },
+      "livro_apoio": {
+        "titulo": "Hábitos Atômicos",
+        "autor": "James Clear",
+        "plataforma": "Amazon",
+        "url": "https://www.amazon.com.br/s?k=Habitos+Atomicos+James+Clear"
+      }
+    },
+    {
+      "numero": 55,
+      "titulo": "Rápido e Devagar: Como Evitar Vieses Cognitivos Usando Prompts Críticos",
+      "tema": "IA & Produtividade",
+      "estilo_visual": "Ouro Quântico",
+      "youtube_video_id": "ysz5S6PUM-U",
+      "data": "2026-11-15",
+      "duracao": "10:15",
+      "arquivo": "ep_055.json",
+      "resumo": "Descubra como usar a teoria do Sistema 1 e Sistema 2 de Daniel Kahneman junto com assistentes de IA para tomar decisões mais claras.",
+      "niveis": {
+        "iniciante": "Temos dois modos de pensar: o piloto automático (rápido) e o modo analítico (devagar). A IA ajuda a ativar o modo analítico.",
+        "sabio": "Heurísticas de disponibilidade distorcem nossa percepção de risco. Prompts de 'advogado do diabo' forçam a ativação do Sistema 2.",
+        "mestre_positivo": "Crie um protocolo de decisão em 3 perguntas antes de agir por impulso emocional, usando a IA como espelho socrático."
+      },
+      "livro_apoio": {
+        "titulo": "Rápido e Devagar: Duas Formas de Pensar",
+        "autor": "Daniel Kahneman",
+        "plataforma": "Amazon",
+        "url": "https://www.amazon.com.br/s?k=Rapido+e+Devagar+Daniel+Kahneman"
+      }
+    },
+    {
+      "numero": 54,
+      "titulo": "A Única Coisa: Foco Profundo Contra a Sobrecarga Digital",
+      "tema": "Hábitos & Foco",
+      "estilo_visual": "Esmeralda Bio-Tech",
+      "youtube_video_id": "jNQXAC9IVRw",
+      "data": "2026-11-10",
+      "duracao": "07:50",
+      "arquivo": "ep_054.json",
+      "resumo": "Como eliminar o ruído de notificações e aplicar a regra da única coisa para conquistar serenidade e produtividade real.",
+      "niveis": {
+        "iniciante": "Fazer tudo ao mesmo tempo cansa a mente. Escolha uma única prioridade pela manhã e proteja seus primeiros 45 minutos.",
+        "sabio": "O custo de troca de contexto consome até 23 minutos de atenção residual. Blocos de foco único preservam a glicose pré-frontal.",
+        "mestre_positivo": "Aplique o Efeito Dominó Positivo: identifique a tarefa-chave que, ao ser concluída, torna todas as outras mais simples ou irrelevantes."
+      },
+      "livro_apoio": {
+        "titulo": "A Única Coisa",
+        "autor": "Gary Keller",
+        "plataforma": "Amazon",
+        "url": "https://www.amazon.com.br/s?k=A+Unica+Coisa+Gary+Keller"
+      }
+    },
+    {
+      "numero": 53,
+      "titulo": "Higiene da Dopamina: Recarregando a Mente sem Telas",
+      "tema": "Bem-Estar Digital",
+      "estilo_visual": "Neon Ciano",
+      "youtube_video_id": "M7lc1UVf-VE",
+      "data": "2026-11-04",
+      "duracao": "09:12",
+      "arquivo": "ep_053.json",
+      "resumo": "Estratégias práticas para equilibrar seus receptores de dopamina e recuperar o prazer nas pequenas vitórias do cotidiano.",
+      "niveis": {
+        "iniciante": "Rolagem infinita dá picos rápidos de prazer seguidos de cansaço. Trocar 15 minutos de tela por luz solar renova sua energia.",
+        "sabio": "Estímulos supranormais dessensibilizam os receptores D2. Micro-jejuns de estímulo restauram a motivação intrínseca.",
+        "mestre_positivo": "Construa uma arquitetura de ambiente de baixo atrito para hábitos restauradores e alto atrito para distrações passivas."
+      },
+      "livro_apoio": {
+        "titulo": "Nação Dopamina",
+        "autor": "Anna Lembke",
+        "plataforma": "Amazon",
+        "url": "https://www.amazon.com.br/s?k=Nacao+Dopamina+Anna+Lembke"
+      }
+    }
+  ]
+}
