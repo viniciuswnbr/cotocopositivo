@@ -16,10 +16,24 @@ let syncTimerInterval = null;
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initPositiveStatus();
+  initVisitorCounter();
   initOracle();
   initRandomGameButton();
   loadPortalData();
 });
+
+function initVisitorCounter() {
+  const el = document.getElementById('visitor-counter-value');
+  if (!el) return;
+
+  let count = Number(localStorage.getItem('cotoco_visitas_positivas') || 65);
+  if (!sessionStorage.getItem('cotoco_visita_registrada')) {
+    count += 1;
+    localStorage.setItem('cotoco_visitas_positivas', String(count));
+    sessionStorage.setItem('cotoco_visita_registrada', '1');
+  }
+  el.textContent = String(count);
+}
 
 function initMobileNav() {
   const toggle = document.getElementById('nav-toggle');
